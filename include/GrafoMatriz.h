@@ -1,7 +1,7 @@
-#ifndef GRAFO_MATRIZ_H
-#define GRAFO_MATRIZ_H 
+#ifndef GRAFOMATRIZ_H
+#define GRAFOMATRIZ_H 
 
-#include "grafo.h"
+#include "Grafo.h"
 
 class GrafoMatriz: public Grafo {
   public:
