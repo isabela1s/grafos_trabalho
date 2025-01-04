@@ -3,9 +3,35 @@
 
 #include "Grafo.h"
 
-class GrafoLista {
+class Aresta {
+    public:
+      int destino;
+      Aresta* prox;
+
+      Aresta(int destino);
+};
+
+class Vertice {
   public:
+    int id;
+    Aresta* arestas;
+    Vertice* prox;
+
+    Vertice(int id);
+    void adicionaAresta(int destino);
+};
+
+class GrafoLista {
   private:
+    Vertice* vertices;
+
+  public:
+    GrafoLista();
+    ~GrafoLista();
+
+    void addVertice(int id);
+    void addAresta(int origgem, int destino);
+    void imprimeGrafo();
 };
 
 #endif //GRAFO_LISTA_H
