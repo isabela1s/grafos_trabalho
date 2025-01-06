@@ -46,3 +46,35 @@ void Grafo::imprimir_grafo() {
     cout << " - Vértices ponderados: " << (verticePonderado ? "Sim" : "Não") << endl;
     cout << " - Arestas ponderadas: " << (arestaPonderada ? "Sim" : "Não") << endl;
 }
+
+bool Grafo::eh_completo()
+{
+    int verticesTotais = get_ordem();
+
+    // Grafos com menos de 2 vértices não são completos
+    if (verticesTotais < 2)
+        return false;
+
+    int arestasEsperadas;
+
+    if (direcionado)
+        arestasEsperadas = verticesTotais * (verticesTotais - 1);
+    else
+        arestasEsperadas = (verticesTotais * (verticesTotais - 1)) / 2;
+
+    return numArestas == arestasEsperadas;
+}
+
+bool Grafo::eh_arvore(int numVertices)
+{
+    // Um grafo é árvore se for conexo, ter ao menos 1 vértice e n-1 arestas
+    int verticesTotais = get_ordem();
+
+    if (verticesTotais < 1)
+        return false;
+
+    if ((numArestas == verticesTotais - 1) && eh_conexo())
+        return true;
+    else
+        return false;
+}

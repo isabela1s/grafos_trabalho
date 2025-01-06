@@ -131,3 +131,185 @@ void GrafoMatriz::carregar_grafo(const std::string& nomeArquivo) {
 
     arquivo.close();
 }
+
+bool GrafoMatriz::eh_conexo() 
+{
+    bool* verticeVisitado = new bool[numVertices];
+    for (int i = 0; i < numVertices; ++i) 
+    verticeVisitado[i] = false;
+
+    dfs(0, verticeVisitado);
+
+    for (int i = 0; i < numVertices; ++i) 
+    {
+        if (!verticeVisitado[i]) 
+        {
+            delete[] verticeVisitado;
+            return false;
+        }
+    }
+
+    delete[] verticeVisitado;
+    return true;
+}
+
+void GrafoMatriz::dfs(int vertice, bool verticeVisitado[]) 
+{
+    verticeVisitado[vertice] = true;
+
+    for (int i = 0; i < numVertices; ++i) {
+        if (matrizAdjacencia[vertice][i] != 0 && !verticeVisitado[i]) {
+            dfs(i, verticeVisitado);
+        }
+    }
+}
+
+int GrafoMatriz::n_conexo() 
+{
+    int quantComponentesConexas = 0;
+    if (eh_conexo()) 
+        return 1; 
+
+    bool* verticeVisitado = new bool[numVertices];
+    for (int i = 0; i < numVertices; ++i) 
+        verticeVisitado[i] = false;
+
+    for (int i = 0; i < numVertices; ++i) 
+    {
+        if (!verticeVisitado[i]) 
+        {
+            dfs(i, verticeVisitado);
+            quantComponentesConexas++;
+        }
+    }
+
+    delete[] verticeVisitado;
+    return quantComponentesConexas;
+}
+
+bool GrafoMatriz::eh_bipartido() 
+{
+    int totalCombinacoes = 1;
+    for (int i = 0; i < numVertices; ++i) 
+    {
+        totalCombinacoes *= 2; // Total de combinações é 2 elevado ao numVertices
+    }    
+
+    int* conjunto = new int[numVertices];    
+
+    for (int combinacao = 0; combinacao < totalCombinacoes; ++combinacao) 
+    {
+        for (int i = 0; i < numVertices; ++i) 
+        {
+            conjunto[i] = (combinacao & (1 << i)) ? 1 : 2;
+        }
+
+        bool valido = true;
+        for (int i = 0; i < numVertices; ++i) 
+        {
+            for (int j = 0; j < numVertices; ++j) 
+            {
+                if (matrizAdjacencia[i][j] != 0 && conjunto[i] == conjunto[j]) 
+                {
+                    valido = false;
+                    break;
+                }
+            }
+            if (!valido) break;
+        }
+
+        if (valido) 
+        {
+            delete[] conjunto;
+            return true;
+        }
+    }
+
+    delete[] conjunto;
+    return false;
+}
+
+int GrafoMatriz::get_grau() 
+{
+    int grau = 0;
+
+    for (int i = 0; i < numVertices; ++i) 
+    {
+        for (int j = 0; j < numVertices; ++j) 
+        {
+            if (matrizAdjacencia[i][j] != 0) 
+            {
+                if (direcionado) 
+                {
+                    grau += 1;
+                } 
+                else 
+                {
+                    if (i == j) 
+                    {
+                        grau += 1;
+                    } 
+                    else 
+                    {
+                        grau += 2;
+                    }
+                }
+            }
+        }
+    }
+
+    if (!direcionado) 
+        grau /= 2; 
+
+    return grau;
+}
+
+bool GrafoMatriz::possui_ponte() 
+{
+    // para cada aresta (i, j) que existe (peso diferente de 0), o código verifica se ela é uma ponte
+    // a aresta é removida temporariamente e, no final, o valor original é restaurado (valorOriginal)
+    for (int i = 0; i < numVertices; ++i) 
+    {
+        for (int j = 0; j < numVertices; ++j) 
+        {
+            if (matrizAdjacencia[i][j] != 0) 
+            {
+                int valorOriginal = matrizAdjacencia[i][j];
+                matrizAdjacencia[i][j] = 0;
+                if (!direcionado) 
+                {
+                    matrizAdjacencia[j][i] = 0;
+                }
+
+                bool* verticeVisitado = new bool[numVertices];
+                for (int k = 0; k < numVertices; ++k) 
+                {
+                    verticeVisitado[k] = false;
+                }
+                dfs(0, verticeVisitado);
+
+                for (int k = 0; k < numVertices; ++k) 
+                {
+                    if (!verticeVisitado[k]) 
+                    {
+                        matrizAdjacencia[i][j] = valorOriginal;
+                        if (!direcionado) 
+                        {
+                            matrizAdjacencia[j][i] = valorOriginal;
+                        }
+                        delete[] verticeVisitado;
+                        return true; // (i, j) é ponte
+                    }
+                }
+
+                matrizAdjacencia[i][j] = valorOriginal;
+                if (!direcionado) 
+                {
+                    matrizAdjacencia[j][i] = valorOriginal;
+                }
+                delete[] verticeVisitado;
+            }
+        }
+    }
+    return false; // não tem ponte
+}
