@@ -21,7 +21,7 @@ class Vertice {
     void adicionaAresta(int destino);
 };
 
-class GrafoLista : Grafo {
+class GrafoLista : public Grafo {
   private:
     Vertice* vertices;
 
@@ -34,12 +34,14 @@ class GrafoLista : Grafo {
 
     void addVertice(int id);
     void addAresta(int origgem, int destino);
-    void imprimeGrafo();
+    void imprimir_grafo(const std::string& nomeArquivo) override;
     int n_conexo() override;
     bool eh_bipartido() override;
     int get_grau() override;
     bool possui_ponte() override;
-    
+    bool possui_articulacao() override;
+    void carregar_grafo(const std::string& nomeArquivo);
+
     bool eh_conexo() override;
 };
 

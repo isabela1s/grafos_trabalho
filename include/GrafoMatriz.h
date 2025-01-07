@@ -20,6 +20,7 @@ public:
     void adicionar_aresta(int origem, int destino, int peso = 1);
     void remover_aresta(int origem, int destino);
     int** get_matriz();
+    bool possui_articulacao() override;
 
     bool eh_conexo() override;
 private:

@@ -1,4 +1,5 @@
 #include "GrafoLista.h"
+# include <fstream>
 
 using namespace std;
 
@@ -19,9 +20,13 @@ void Vertice::adicionaAresta(int destino) {
   this->arestas = newAresta;
 }
 
-GrafoLista::GrafoLista() {
-  this->vertices = nullptr;
+//GrafoLista::GrafoLista() {
+  //this->vertices = nullptr;
+//}
+GrafoLista::GrafoLista() : Grafo(0, false, false, false) {
+    vertices = nullptr;
 }
+
 
 GrafoLista::~GrafoLista() {
   Vertice* vTemp = this->vertices;
@@ -57,33 +62,42 @@ void GrafoLista::addAresta(int origem, int destino) {
   vertices->adicionaAresta(destino);
 }
 
-void GrafoLista::imprimeGrafo() {
-  Vertice* vAtual = this->vertices;
-  while (vAtual != nullptr) {
-    cout << "Vértice " << vAtual->id << " : ";
-    Aresta* aAtual = vAtual->arestas;
-    while (aAtual != nullptr) {
-      cout << " -> " << aAtual->destino;
-      aAtual = aAtual->prox;
+void GrafoLista::imprimir_grafo(const string& nomeArquivo) {
+    ofstream arquivo(nomeArquivo);
+
+    if (!arquivo.is_open()) {
+        std::cerr << "Erro ao abrir o arquivo!" << std::endl;
+        return;
     }
-    cout << endl;
-    vAtual = vAtual->prox;
-  }
+
+    Vertice* vAtual = vertices;
+    while (vAtual) {
+        arquivo << "Vértice " << vAtual->id << " : ";
+        Aresta* aAtual = vAtual->arestas;
+        while (aAtual) {
+            arquivo << " -> " << aAtual->destino;
+            aAtual = aAtual->prox;
+        }
+        arquivo << "\n";
+        vAtual = vAtual->prox;
+    }
+
+    arquivo.close();
 }
 
-bool GrafoLista::eh_conexo() 
+bool GrafoLista::eh_conexo()
 {
     bool* verticeVisitado = new bool[getNumVertices()];
     for (int i = 0; i < getNumVertices(); ++i)
       verticeVisitado[i] = false;
-    
+
     Vertice* verticeAtual = this->vertices;
 
     dfs(verticeAtual, verticeVisitado);
 
-    for (int i = 0; i < getNumVertices(); ++i) 
+    for (int i = 0; i < getNumVertices(); ++i)
     {
-      if (!verticeVisitado[i]) 
+      if (!verticeVisitado[i])
       {
         delete[] verticeVisitado;
         return false;
@@ -94,25 +108,25 @@ bool GrafoLista::eh_conexo()
     return true;
 }
 
-void GrafoLista::dfs(Vertice* vertice, bool verticeVisitado[]) 
+void GrafoLista::dfs(Vertice* vertice, bool verticeVisitado[])
 {
   verticeVisitado[vertice->id] = true;
 
   Aresta* arestaAtual = vertice->arestas;
-  while (arestaAtual != nullptr) 
+  while (arestaAtual != nullptr)
   {
-    if (!verticeVisitado[arestaAtual->destino]) 
+    if (!verticeVisitado[arestaAtual->destino])
       dfs(getVertice(arestaAtual->destino), verticeVisitado);
-    
+
     arestaAtual = arestaAtual->prox;
   }
 }
 
-int GrafoLista::getNumVertices() 
+int GrafoLista::getNumVertices()
 {
   int count = 0;
   Vertice* verticeAtual = this->vertices;
-  while (verticeAtual != nullptr) 
+  while (verticeAtual != nullptr)
   {
     count++;
     verticeAtual = verticeAtual->prox;
@@ -120,34 +134,34 @@ int GrafoLista::getNumVertices()
   return count;
 }
 
-Vertice* GrafoLista::getVertice(int id) 
+Vertice* GrafoLista::getVertice(int id)
 {
   Vertice* verticeAtual = this->vertices;
-  while (verticeAtual != nullptr) 
+  while (verticeAtual != nullptr)
   {
     if (verticeAtual->id == id)
       return verticeAtual;
-    
+
     verticeAtual = verticeAtual->prox;
   }
   return nullptr;
 }
 
-int GrafoLista::n_conexo() 
+int GrafoLista::n_conexo()
 {
-  if (eh_conexo()) 
+  if (eh_conexo())
     return 1;
-  
+
   bool* verticeVisitado = new bool[numVertices];
   int quantComponentesConexas = 0;
-  
-  for (int i = 0; i < numVertices; ++i) 
+
+  for (int i = 0; i < numVertices; ++i)
     verticeVisitado[i] = false;
-  
-  for (int i = 0; i < numVertices; ++i) 
+
+  for (int i = 0; i < numVertices; ++i)
   {
     Vertice* vertice = getVertice(i);
-    if (vertice != nullptr && !verticeVisitado[vertice->id]) 
+    if (vertice != nullptr && !verticeVisitado[vertice->id])
     {
       dfs(vertice, verticeVisitado);
       quantComponentesConexas++;
@@ -158,36 +172,36 @@ int GrafoLista::n_conexo()
   return quantComponentesConexas;
 }
 
-bool GrafoLista::eh_bipartido() 
+bool GrafoLista::eh_bipartido()
 {
   int totalCombinacoes = 1;
-  for (int i = 0; i < numVertices; ++i) 
+  for (int i = 0; i < numVertices; ++i)
   {
     totalCombinacoes *= 2; // Total de combinações é 2 elevado ao numVertices
   }
 
-  int* conjunto = new int[numVertices]; 
+  int* conjunto = new int[numVertices];
 
-  for (int combinacao = 0; combinacao < totalCombinacoes; ++combinacao) 
+  for (int combinacao = 0; combinacao < totalCombinacoes; ++combinacao)
   {
-    for (int i = 0; i < numVertices; ++i) 
+    for (int i = 0; i < numVertices; ++i)
     {
-      if ((combinacao % (1 << (i + 1))) >= (1 << i)) 
+      if ((combinacao % (1 << (i + 1))) >= (1 << i))
       {
         conjunto[i] = 1;  // Marca como conjunto 1
-      } 
-      else 
+      }
+      else
       {
         conjunto[i] = 2;  // Marca como conjunto 2
       }
     }
 
     bool valido = true;
-    for (int i = 0; i < numVertices; ++i) 
+    for (int i = 0; i < numVertices; ++i)
     {
       Vertice* vertice = getVertice(i);
       Aresta* aresta = vertice->arestas;
-      while (aresta != nullptr) 
+      while (aresta != nullptr)
       {
         if (conjunto[vertice->id] == conjunto[aresta->destino])
         {
@@ -199,7 +213,7 @@ bool GrafoLista::eh_bipartido()
       if (!valido) break;
     }
 
-    if (valido) 
+    if (valido)
     {
       delete[] conjunto;
       return true;
@@ -210,28 +224,28 @@ bool GrafoLista::eh_bipartido()
   return false;
 }
 
-int GrafoLista::get_grau() 
+int GrafoLista::get_grau()
 {
   int grau = 0;
 
-  for (int i = 0; i < numVertices; ++i) 
+  for (int i = 0; i < numVertices; ++i)
   {
     Vertice* vertice = getVertice(i);
     Aresta* aresta = vertice->arestas;
 
-    while (aresta != nullptr) 
+    while (aresta != nullptr)
     {
-      if (direcionado) 
+      if (direcionado)
       {
         grau += 1;
-      } 
-      else 
+      }
+      else
       {
-        if (aresta->destino == vertice->id) 
+        if (aresta->destino == vertice->id)
         {
           grau += 1;
-        } 
-        else 
+        }
+        else
         {
           grau += 2;
         }
@@ -240,42 +254,42 @@ int GrafoLista::get_grau()
     }
   }
 
-  if (!direcionado) 
+  if (!direcionado)
     grau /= 2;
-  
+
   return grau;
 }
 
 bool GrafoLista::possui_ponte()
  {
-  for (int u = 0; u < numVertices; ++u) 
+  for (int u = 0; u < numVertices; ++u)
   {
     Vertice* vertice = getVertice(u);
     Aresta* aresta = vertice->arestas;
 
-    while (aresta != nullptr) 
+    while (aresta != nullptr)
     {
       int v = aresta->destino;
-      
+
       aresta = aresta->prox;
 
       bool* verticeVisitado = new bool[numVertices];
-      for (int i = 0; i < numVertices; ++i) 
+      for (int i = 0; i < numVertices; ++i)
         verticeVisitado[i] = false;
 
       dfs(getVertice(0), verticeVisitado);
 
       bool ehConectado = true;
-      for (int i = 0; i < numVertices; ++i) 
+      for (int i = 0; i < numVertices; ++i)
       {
-        if (!verticeVisitado[i]) 
+        if (!verticeVisitado[i])
         {
           ehConectado = false;
           break;
         }
       }
 
-      if (!ehConectado) 
+      if (!ehConectado)
       {
         delete[] verticeVisitado;
         return true; // (u, v) é ponte
@@ -286,4 +300,52 @@ bool GrafoLista::possui_ponte()
   }
 
   return false; // não tem ponte
+}
+
+bool GrafoLista::possui_articulacao() {
+    Vertice* vAtual = vertices;
+    while (vAtual != nullptr) {
+        int id = vAtual->id;
+
+        // Remover temporariamente as arestas do vértice
+        Aresta* backup = vAtual->arestas;
+        vAtual->arestas = nullptr;
+
+        // Verificar se o grafo ainda é conexo
+        bool conexo = eh_conexo();
+
+        // Restaurar as arestas
+        vAtual->arestas = backup;
+
+        // Se o grafo não for conexo, então v é uma articulação
+        if (!conexo) {
+            return true;
+        }
+
+        vAtual = vAtual->prox;
+    }
+    return false; // Nenhuma articulação encontrada
+}
+void GrafoLista::carregar_grafo(const std::string& nomeArquivo) {
+    ifstream arquivo(nomeArquivo);
+
+    if (!arquivo.is_open()) {
+        std::cerr << "Erro ao abrir o arquivo!" << std::endl;
+        return;
+    }
+
+    int numVertices, numArestas;
+    arquivo >> numVertices >> numArestas;
+
+    // Adiciona os vértices
+    for (int i = 1; i <= numVertices; ++i) {
+        addVertice(i);
+    }
+
+    int origem, destino;
+    while (arquivo >> origem >> destino) {
+        addAresta(origem, destino); // Adiciona aresta
+    }
+
+    arquivo.close();
 }

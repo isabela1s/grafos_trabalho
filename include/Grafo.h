@@ -19,7 +19,7 @@ public:
     virtual bool possui_ponte() = 0;
     void carrega_grafo();
     void novo_grafo();
-    virtual void imprimir_grafo(const std::string& nomeArquivo) = 0;  
+    virtual void imprimir_grafo(const std::string& nomeArquivo) = 0;
 
     virtual ~Grafo();  // Destrutor virtual
     virtual bool eh_conexo() = 0;

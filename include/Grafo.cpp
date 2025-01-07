@@ -39,7 +39,7 @@ bool Grafo::aresta_ponderada() {
 }
 
 // Método básico para exibir informações do grafo
-void Grafo::imprimir_grafo() {
+void Grafo::imprimir_grafo(const std::string& nomeArquivo) {
     cout << "Grafo: " << endl;
     cout << " - Ordem (número de vértices): " << numVertices << endl;
     cout << " - Direcionado: " << (direcionado ? "Sim" : "Não") << endl;
@@ -78,3 +78,4 @@ bool Grafo::eh_arvore(int numVertices)
     else
         return false;
 }
+

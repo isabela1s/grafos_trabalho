@@ -1,27 +1,25 @@
 #include <iostream>
-#include "Grafo.h"
-#include "GrafoLista.h"
 #include "GrafoMatriz.h"
+#include "GrafoLista.h"
 
 using namespace std;
 
 int main() {
-    // Criar um grafo usando matriz de adjacência
-    Grafo* grafo1 = new GrafoMatriz(5, true, true, true); // 5 vértices, não direcionado, sem pesos nos vértices, arestas ponderadas
-    grafo1->imprimir_grafo("grafo.txt");
-    calcularComponentesConexas(grafo1);
-    delete grafo1;
+    // Testando com GrafoMatriz
+    cout << "Carregando grafo com matriz de adjacência..." << endl;
+    GrafoMatriz grafoMatriz(0, false, false, false); // Inicializa sem vértices
+    grafoMatriz.imprimir_grafo("grafo_saida.txt");
+    grafoMatriz.carregar_grafo("grafo.txt");
 
-    // Criar um grafo usando lista de adjacência
-    //Grafo* grafo2 = new GrafoLista(4, true, true, false); // 4 vértices, direcionado, pesos nos vértices, arestas não ponderadas
-    //grafo2->imprimir_grafo();
-    //calcularComponentesConexas(grafoLista);
-    //delete grafo2;
+    cout << "O grafo é conexo? " << (grafoMatriz.eh_conexo() ? "Sim" : "Não") << endl;
+
+    // Testando com GrafoLista
+    cout << "\nCarregando grafo com lista de adjacência..." << endl;
+    GrafoLista grafoLista;
+    grafoLista.imprimir_grafo("grafo_saida.txt");
+    grafoLista.carregar_grafo("grafo.txt");
+
+    cout << "Número de componentes conexas: " << grafoLista.n_conexo() << endl;
 
     return 0;
-}
-
-void calcularComponentesConexas(Grafo* grafo) {
-    int componentes = grafo->n_conexo();
-    std::cout << "Número de componentes conexas: " << componentes << std::endl;
 }

@@ -59,33 +59,19 @@ void GrafoMatriz::liberar_matriz() {
     }
 }
 
-void GrafoMatriz::imprimir_grafo(const string& nomeArquivo) {
+void GrafoMatriz::imprimir_grafo(const std::string& nomeArquivo) {
     ofstream arquivo(nomeArquivo);
 
-    if (!arquivo) {
-        cout << "Erro ao abrir o arquivo para escrita!" << endl;
+    if (!arquivo.is_open()) {
+        std::cerr << "Erro ao abrir o arquivo!" << std::endl;
         return;
     }
 
-    // Escreve as informações principais do grafo (como grau, ordem, se é direcionado, etc.)
-    arquivo << numVertices << " " << (direcionado ? 1 : 0) << " " << (verticePonderado ? 1 : 0)
-            << " " << (arestaPonderada ? 1 : 0) << endl;
-
-    // Se os vértices forem ponderados, escreve os pesos
-    if (verticePonderado) {
-        for (int i = 0; i < numVertices; ++i) {
-            arquivo << pesosVertices[i] << " ";  // Exemplo de impressão dos pesos dos vértices
-        }
-        arquivo << endl;
-    }
-
-    // Escreve as arestas, se existirem
     for (int i = 0; i < numVertices; ++i) {
         for (int j = 0; j < numVertices; ++j) {
-            if (matrizAdjacencia[i][j] != 0) {  // Se a aresta existir (não é 0)
-                arquivo << i + 1 << " " << j + 1 << " " << matrizAdjacencia[i][j] << endl;
-            }
+            arquivo << matrizAdjacencia[i][j] << " ";
         }
+        arquivo << "\n";
     }
 
     arquivo.close();
@@ -132,17 +118,17 @@ void GrafoMatriz::carregar_grafo(const std::string& nomeArquivo) {
     arquivo.close();
 }
 
-bool GrafoMatriz::eh_conexo() 
+bool GrafoMatriz::eh_conexo()
 {
     bool* verticeVisitado = new bool[numVertices];
-    for (int i = 0; i < numVertices; ++i) 
+    for (int i = 0; i < numVertices; ++i)
     verticeVisitado[i] = false;
 
     dfs(0, verticeVisitado);
 
-    for (int i = 0; i < numVertices; ++i) 
+    for (int i = 0; i < numVertices; ++i)
     {
-        if (!verticeVisitado[i]) 
+        if (!verticeVisitado[i])
         {
             delete[] verticeVisitado;
             return false;
@@ -153,7 +139,7 @@ bool GrafoMatriz::eh_conexo()
     return true;
 }
 
-void GrafoMatriz::dfs(int vertice, bool verticeVisitado[]) 
+void GrafoMatriz::dfs(int vertice, bool verticeVisitado[])
 {
     verticeVisitado[vertice] = true;
 
@@ -164,19 +150,19 @@ void GrafoMatriz::dfs(int vertice, bool verticeVisitado[])
     }
 }
 
-int GrafoMatriz::n_conexo() 
+int GrafoMatriz::n_conexo()
 {
     int quantComponentesConexas = 0;
-    if (eh_conexo()) 
-        return 1; 
+    if (eh_conexo())
+        return 1;
 
     bool* verticeVisitado = new bool[numVertices];
-    for (int i = 0; i < numVertices; ++i) 
+    for (int i = 0; i < numVertices; ++i)
         verticeVisitado[i] = false;
 
-    for (int i = 0; i < numVertices; ++i) 
+    for (int i = 0; i < numVertices; ++i)
     {
-        if (!verticeVisitado[i]) 
+        if (!verticeVisitado[i])
         {
             dfs(i, verticeVisitado);
             quantComponentesConexas++;
@@ -187,29 +173,29 @@ int GrafoMatriz::n_conexo()
     return quantComponentesConexas;
 }
 
-bool GrafoMatriz::eh_bipartido() 
+bool GrafoMatriz::eh_bipartido()
 {
     int totalCombinacoes = 1;
-    for (int i = 0; i < numVertices; ++i) 
+    for (int i = 0; i < numVertices; ++i)
     {
         totalCombinacoes *= 2; // Total de combinações é 2 elevado ao numVertices
-    }    
+    }
 
-    int* conjunto = new int[numVertices];    
+    int* conjunto = new int[numVertices];
 
-    for (int combinacao = 0; combinacao < totalCombinacoes; ++combinacao) 
+    for (int combinacao = 0; combinacao < totalCombinacoes; ++combinacao)
     {
-        for (int i = 0; i < numVertices; ++i) 
+        for (int i = 0; i < numVertices; ++i)
         {
             conjunto[i] = (combinacao & (1 << i)) ? 1 : 2;
         }
 
         bool valido = true;
-        for (int i = 0; i < numVertices; ++i) 
+        for (int i = 0; i < numVertices; ++i)
         {
-            for (int j = 0; j < numVertices; ++j) 
+            for (int j = 0; j < numVertices; ++j)
             {
-                if (matrizAdjacencia[i][j] != 0 && conjunto[i] == conjunto[j]) 
+                if (matrizAdjacencia[i][j] != 0 && conjunto[i] == conjunto[j])
                 {
                     valido = false;
                     break;
@@ -218,7 +204,7 @@ bool GrafoMatriz::eh_bipartido()
             if (!valido) break;
         }
 
-        if (valido) 
+        if (valido)
         {
             delete[] conjunto;
             return true;
@@ -229,27 +215,27 @@ bool GrafoMatriz::eh_bipartido()
     return false;
 }
 
-int GrafoMatriz::get_grau() 
+int GrafoMatriz::get_grau()
 {
     int grau = 0;
 
-    for (int i = 0; i < numVertices; ++i) 
+    for (int i = 0; i < numVertices; ++i)
     {
-        for (int j = 0; j < numVertices; ++j) 
+        for (int j = 0; j < numVertices; ++j)
         {
-            if (matrizAdjacencia[i][j] != 0) 
+            if (matrizAdjacencia[i][j] != 0)
             {
-                if (direcionado) 
+                if (direcionado)
                 {
                     grau += 1;
-                } 
-                else 
+                }
+                else
                 {
-                    if (i == j) 
+                    if (i == j)
                     {
                         grau += 1;
-                    } 
-                    else 
+                    }
+                    else
                     {
                         grau += 2;
                     }
@@ -258,42 +244,42 @@ int GrafoMatriz::get_grau()
         }
     }
 
-    if (!direcionado) 
-        grau /= 2; 
+    if (!direcionado)
+        grau /= 2;
 
     return grau;
 }
 
-bool GrafoMatriz::possui_ponte() 
+bool GrafoMatriz::possui_ponte()
 {
     // para cada aresta (i, j) que existe (peso diferente de 0), o código verifica se ela é uma ponte
     // a aresta é removida temporariamente e, no final, o valor original é restaurado (valorOriginal)
-    for (int i = 0; i < numVertices; ++i) 
+    for (int i = 0; i < numVertices; ++i)
     {
-        for (int j = 0; j < numVertices; ++j) 
+        for (int j = 0; j < numVertices; ++j)
         {
-            if (matrizAdjacencia[i][j] != 0) 
+            if (matrizAdjacencia[i][j] != 0)
             {
                 int valorOriginal = matrizAdjacencia[i][j];
                 matrizAdjacencia[i][j] = 0;
-                if (!direcionado) 
+                if (!direcionado)
                 {
                     matrizAdjacencia[j][i] = 0;
                 }
 
                 bool* verticeVisitado = new bool[numVertices];
-                for (int k = 0; k < numVertices; ++k) 
+                for (int k = 0; k < numVertices; ++k)
                 {
                     verticeVisitado[k] = false;
                 }
                 dfs(0, verticeVisitado);
 
-                for (int k = 0; k < numVertices; ++k) 
+                for (int k = 0; k < numVertices; ++k)
                 {
-                    if (!verticeVisitado[k]) 
+                    if (!verticeVisitado[k])
                     {
                         matrizAdjacencia[i][j] = valorOriginal;
-                        if (!direcionado) 
+                        if (!direcionado)
                         {
                             matrizAdjacencia[j][i] = valorOriginal;
                         }
@@ -303,7 +289,7 @@ bool GrafoMatriz::possui_ponte()
                 }
 
                 matrizAdjacencia[i][j] = valorOriginal;
-                if (!direcionado) 
+                if (!direcionado)
                 {
                     matrizAdjacencia[j][i] = valorOriginal;
                 }
@@ -313,3 +299,33 @@ bool GrafoMatriz::possui_ponte()
     }
     return false; // não tem ponte
 }
+
+bool GrafoMatriz::possui_articulacao() {
+    for (int v = 0; v < numVertices; ++v) {
+        // Remover temporariamente o vértice v
+        int* backup = new int[numVertices];
+        for (int i = 0; i < numVertices; ++i) {
+            backup[i] = matrizAdjacencia[v][i]; // Salvar a linha
+            matrizAdjacencia[v][i] = 0;         // Remover as conexões
+            matrizAdjacencia[i][v] = 0;         // Remover conexões de volta
+        }
+
+        // Verificar se o grafo ainda é conexo
+        bool conexo = eh_conexo();
+
+        // Restaurar as conexões
+        for (int i = 0; i < numVertices; ++i) {
+            matrizAdjacencia[v][i] = backup[i];
+            matrizAdjacencia[i][v] = backup[i];
+        }
+
+        delete[] backup;
+
+        // Se o grafo não for conexo, então v é uma articulação
+        if (!conexo) {
+            return true;
+        }
+    }
+    return false; // Nenhuma articulação encontrada
+}
+
