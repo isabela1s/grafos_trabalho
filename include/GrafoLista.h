@@ -7,6 +7,7 @@
 #include <string>
 #include <stack>
 #include <iostream>
+#include <queue>
 
 class GrafoLista : public Grafo {
 public:
@@ -24,14 +25,15 @@ public:
     void carregar_grafo(const std::string& nomeArquivo) override;
     void imprimir_grafo(const std::string& nomeArquivo) const override;
 
-    void adicionar_vertice(int id);
-    void adicionar_aresta(int origem, int destino);
+    void adicionar_aresta(int origem, int destino, int peso = 1); // Adiciona aresta com peso
+    void adicionar_vertice(int id); // Adiciona um novo vértice ao grafo
 
 private:
     struct Aresta {
         int destino;
+        int peso;
         Aresta* prox;
-        Aresta(int d) : destino(d), prox(nullptr) {}
+        Aresta(int d, int p) : destino(d), peso(p), prox(nullptr) {}
     };
 
     struct Vertice {
@@ -39,19 +41,25 @@ private:
         Aresta* arestas;
         Vertice(int id) : id(id), arestas(nullptr) {}
 
-        void adicionar_aresta(int destino) {
-            Aresta* nova = new Aresta(destino);
+        void adicionar_aresta(int destino, int peso) {
+            Aresta* nova = new Aresta(destino, peso);
             nova->prox = arestas;
             arestas = nova;
         }
     };
 
     std::unordered_map<int, Vertice*> listaAdj;
+
     void dfs(int id, std::unordered_map<int, bool>& visitados) const;
     void dfs_pontes(int id, int parent, std::unordered_map<int, int>& discovery,
                     std::unordered_map<int, int>& low, int& time, bool& temPonte);
     Vertice* get_vertice(int id) const;
-
+    void dfs_articulacao(int id, int parent, std::unordered_map<int, int>& discovery,
+                          std::unordered_map<int, int>& low, std::unordered_map<int, bool>& visitados,
+                          int& time, bool& temArticulacao) const;
+    void dfs_ponte(int id, int parent, std::unordered_map<int, int>& discovery,
+                   std::unordered_map<int, int>& low, std::unordered_map<int, bool>& visitados,
+                   int& time, bool& temPonte) const;
 };
 
 #endif // GRAFOLISTA_H

@@ -25,11 +25,16 @@ public:
     void adicionar_vertice(); // Adiciona um vértice na matriz (aumenta tamanho)
     void adicionar_aresta(int origem, int destino, int peso = 1); // Adiciona aresta com peso
 
+    // Funções auxiliares
+    int get_ordem() const;
+    bool eh_direcionado() const;
+    bool vertice_ponderado() const;
+    bool aresta_ponderada() const;
+
 private:
     std::vector<std::vector<int>> matrizAdj; // Matriz de adjacência
     void dfs(int vertice, std::vector<bool>& visitados) const; // Versão original (para n_conexo)
     void dfs(int vertice, std::vector<bool>& visitados, const std::vector<std::vector<int>>& matriz) const; // Para possui_articulacao
-
 };
 
 #endif // GRAFOMATRIZ_H

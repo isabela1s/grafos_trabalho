@@ -1,4 +1,3 @@
-// Arquivo: Grafo.h
 #ifndef GRAFO_H
 #define GRAFO_H
 
@@ -21,8 +20,8 @@ public:
     bool eh_direcionado() const;
     bool vertice_ponderado() const;
     bool aresta_ponderada() const;
-    virtual bool eh_completo() const = 0; // Deve ser virtual porque depende da implementação
-    virtual bool eh_arvore() const = 0;   // Deve ser virtual porque depende da implementação
+    virtual bool eh_completo() const = 0;
+    virtual bool eh_arvore() const = 0;
     virtual bool possui_articulacao() const = 0;
 
 protected:

@@ -170,12 +170,13 @@ void GrafoMatriz::dfs(int vertice, std::vector<bool>& visitados) const {
 bool GrafoMatriz::eh_completo() const {
     for (int i = 0; i < numVertices; ++i) {
         for (int j = 0; j < numVertices; ++j) {
-            if (i != j && matrizAdj[i][j] == 0) { // Se não houver aresta entre dois vértices diferentes
-                return false; // Não é completo
+            // Ignora a diagonal, pois um vértice não está conectado a si mesmo
+            if (i != j && matrizAdj[i][j] == 0) {
+                return false; // Se alguma aresta estiver faltando, o grafo não é completo
             }
         }
     }
-    return true; // É completo
+    return true; // O grafo é completo
 }
 
 
@@ -204,6 +205,10 @@ void GrafoMatriz::carregar_grafo(const std::string& nomeArquivo) {
     for (int i = 0; i < numVertices; ++i) {
         for (int j = 0; j < numVertices; ++j) {
             arquivo >> matrizAdj[i][j];
+            if (matrizAdj[i][j] != 0) {
+                // Para grafos não direcionados, preenche também a posição inversa
+                matrizAdj[j][i] = matrizAdj[i][j];
+            }
         }
     }
 
@@ -217,12 +222,29 @@ void GrafoMatriz::imprimir_grafo(const std::string& nomeArquivo) const {
         return;
     }
 
+    arquivo << "Matriz de Adjacência:\n"; // Adiciona um título para a matriz
     for (const auto& linha : matrizAdj) {
         for (int peso : linha) {
             arquivo << peso << " ";
         }
-        arquivo << std::endl;
+        arquivo << "\n";
     }
     arquivo.close();
     std::cout << "Grafo salvo em " << nomeArquivo << std::endl;
+}
+
+int GrafoMatriz::get_ordem() const {
+    return numVertices;
+}
+
+bool GrafoMatriz::eh_direcionado() const {
+    return direcionado;
+}
+
+bool GrafoMatriz::vertice_ponderado() const {
+    return verticePonderado;
+}
+
+bool GrafoMatriz::aresta_ponderada() const {
+    return arestaPonderada;
 }
