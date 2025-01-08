@@ -1,6 +1,8 @@
-#include "GrafoMatriz.h"
+#include "../include/grafoMatriz.h"
+
 #include <iostream>
 #include <fstream>
+
 using namespace std;
 
 GrafoMatriz::GrafoMatriz(int numVertices, bool direcionado, bool verticePonderado, bool arestaPonderada)

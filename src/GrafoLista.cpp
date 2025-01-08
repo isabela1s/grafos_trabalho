@@ -1,5 +1,6 @@
-#include "GrafoLista.h"
-# include <fstream>
+#include "../include/grafoLista.h"
+
+#include <fstream>
 
 using namespace std;
 

@@ -1,6 +1,7 @@
+#include "../include/grafoMatriz.h"
+#include "../include/grafoLista.h"
+
 #include <iostream>
-#include "GrafoMatriz.h"
-#include "GrafoLista.h"
 
 using namespace std;
 
