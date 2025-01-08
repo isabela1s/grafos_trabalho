@@ -77,41 +77,39 @@ void GrafoMatriz::imprimir_grafo(const std::string& nomeArquivo) {
     arquivo.close();
 }
 
-void GrafoMatriz::carregar_grafo(const std::string& nomeArquivo) {
-    ifstream arquivo(nomeArquivo);
+void GrafoMatriz::carregar_grafo(const string& nomeArquivo) 
+{
+    ifstream arquivo(nomeArquivo.c_str());
 
-    if (!arquivo) {
-        cerr << "Erro ao abrir o arquivo para leitura!" << endl;
-        return;
+    if (!arquivo.is_open()) 
+    {
+        cout << "Não foi possível abrir o arquivo: " << nomeArquivo << endl;
+        exit(EXIT_FAILURE);
     }
 
-    int numVertices, direcionado, verticePonderado, arestaPonderada;
-    arquivo >> numVertices >> direcionado >> verticePonderado >> arestaPonderada;
+    int numVertices, direcionado, ponderadoVertices, ponderadoArestas;
+    arquivo >> numVertices >> direcionado >> ponderadoVertices >> ponderadoArestas;
 
-    // Inicializa a matriz de adjacência com base nas informações lidas
-    this->numVertices = numVertices;
-    this->direcionado = direcionado;
-    this->verticePonderado = verticePonderado;
-    this->arestaPonderada = arestaPonderada;
-
-    // Recria a matriz de adjacência, caso necessário
     liberar_matriz();
     inicializar_matriz();
 
-    // Se os vértices são ponderados, leia os pesos dos vértices
-    if (verticePonderado) {
-        for (int i = 0; i < numVertices; ++i) {
+    if (ponderadoVertices) 
+    {
+        for (int i = 0; i < numVertices; i++) 
+        {
             int peso;
-            arquivo >> peso;  // Lê o peso de cada vértice
-            pesosVertices[i] = peso;  // Armazena o peso no vetor de pesos de vértices
+            arquivo >> peso;
         }
     }
 
-    // Ler as arestas e seus pesos
-    int origem, destino, peso;
-    while (arquivo >> origem >> destino >> peso) {
-        origem--;  // Ajusta para índice 0 (já que no arquivo os vértices começam de 1)
-        destino--; // Ajusta para índice 0
+    int origem, destino, peso = 1; // Peso padrão é 1
+    while (arquivo >> origem >> destino) 
+    {
+        if (ponderadoArestas && !(arquivo >> peso)) 
+        {
+            cout << "Aresta ponderada sem peso!" << endl;
+            exit(EXIT_FAILURE);
+        }
         adicionar_aresta(origem, destino, peso);
     }
 

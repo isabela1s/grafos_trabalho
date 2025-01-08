@@ -326,26 +326,43 @@ bool GrafoLista::possui_articulacao() {
     }
     return false; // Nenhuma articulação encontrada
 }
-void GrafoLista::carregar_grafo(const std::string& nomeArquivo) {
-    ifstream arquivo(nomeArquivo);
 
-    if (!arquivo.is_open()) {
-        std::cerr << "Erro ao abrir o arquivo!" << std::endl;
-        return;
+void GrafoLista::carregar_grafo(const string& nomeArquivo) {
+  ifstream arquivo(nomeArquivo.c_str()); 
+
+  if (!arquivo.is_open()) 
+  {
+    cout << "Não foi possível abrir o arquivo: " << nomeArquivo << endl;
+    exit(EXIT_FAILURE); 
+  }
+
+  int numVertices, direcionado, ponderadoVertices, ponderadoArestas;
+  arquivo >> numVertices >> direcionado >> ponderadoVertices >> ponderadoArestas;
+
+  for (int i = 0; i < numVertices; i++) 
+  {
+    addVertice(i);
+  }
+
+  if (ponderadoVertices) 
+  {
+    for (int i = 0; i < numVertices; i++) 
+    {
+      int peso;
+      arquivo >> peso;
     }
+  }
 
-    int numVertices, numArestas;
-    arquivo >> numVertices >> numArestas;
-
-    // Adiciona os vértices
-    for (int i = 1; i <= numVertices; ++i) {
-        addVertice(i);
+  int origem, destino, peso = 1; // Peso padrão é 1
+  while (arquivo >> origem >> destino) 
+  {
+    if (ponderadoArestas && !(arquivo >> peso)) 
+    {
+      cout << "Aresta ponderada sem peso!" << endl;
+      exit(EXIT_FAILURE); 
     }
+    addAresta(origem, destino); 
+  }
 
-    int origem, destino;
-    while (arquivo >> origem >> destino) {
-        addAresta(origem, destino); // Adiciona aresta
-    }
-
-    arquivo.close();
+  arquivo.close();
 }
