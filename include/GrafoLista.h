@@ -1,48 +1,57 @@
-#ifndef GRAFO_LISTA_H
-#define GRAFO_LISTA_H
+#ifndef GRAFOLISTA_H
+#define GRAFOLISTA_H
 
 #include "Grafo.h"
-
-class Aresta {
-    public:
-      int destino;
-      Aresta* prox;
-
-      Aresta(int destino);
-};
-
-class Vertice {
-  public:
-    int id;
-    Aresta* arestas;
-    Vertice* prox;
-
-    Vertice(int id);
-    void adicionaAresta(int destino);
-};
+#include <unordered_map>
+#include <vector>
+#include <string>
+#include <stack>
+#include <iostream>
 
 class GrafoLista : public Grafo {
-  private:
-    Vertice* vertices;
-
-    int getNumVertices();
-    Vertice* getVertice(int id);
-    void dfs(Vertice* vertice, bool visitado[]);
-  public:
-    GrafoLista();
+public:
+    GrafoLista(int numVertices, bool direcionado, bool verticePonderado, bool arestaPonderada);
     ~GrafoLista();
 
-    void addVertice(int id);
-    void addAresta(int origgem, int destino);
-    void imprimir_grafo(const std::string& nomeArquivo) override;
-    int n_conexo() override;
-    bool eh_bipartido() override;
-    int get_grau() override;
-    bool possui_ponte() override;
-    bool possui_articulacao() override;
-    void carregar_grafo(const std::string& nomeArquivo);
+    bool eh_bipartido() const override;
+    int n_conexo() const override;
+    int get_grau(int vertice) const override;
+    bool possui_articulacao() const override;
+    bool possui_ponte() const override;
+    bool eh_completo() const override;
+    bool eh_arvore() const override;
 
-    bool eh_conexo() override;
+    void carregar_grafo(const std::string& nomeArquivo) override;
+    void imprimir_grafo(const std::string& nomeArquivo) const override;
+
+    void adicionar_vertice(int id);
+    void adicionar_aresta(int origem, int destino);
+
+private:
+    struct Aresta {
+        int destino;
+        Aresta* prox;
+        Aresta(int d) : destino(d), prox(nullptr) {}
+    };
+
+    struct Vertice {
+        int id;
+        Aresta* arestas;
+        Vertice(int id) : id(id), arestas(nullptr) {}
+
+        void adicionar_aresta(int destino) {
+            Aresta* nova = new Aresta(destino);
+            nova->prox = arestas;
+            arestas = nova;
+        }
+    };
+
+    std::unordered_map<int, Vertice*> listaAdj;
+    void dfs(int id, std::unordered_map<int, bool>& visitados) const;
+    void dfs_pontes(int id, int parent, std::unordered_map<int, int>& discovery,
+                    std::unordered_map<int, int>& low, int& time, bool& temPonte);
+    Vertice* get_vertice(int id) const;
+
 };
 
-#endif //GRAFO_LISTA_H
+#endif // GRAFOLISTA_H
