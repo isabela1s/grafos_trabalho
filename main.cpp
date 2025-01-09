@@ -32,8 +32,8 @@ int main(int argc, char* argv[]) {
 
         if(estrutura == "-m") {
             GrafoMatriz grafo(4, false, false, false); // Inicializa o grafo com 4 vértices
-            grafo.carregar_grafo("grafo_teste.txt");         // Carrega o grafo a partir do arquivo
-            grafo.imprimir_grafo("grafo_matriz_teste.txt"); // Imprime o grafo para verificar
+            grafo.carregar_grafo(arquivo_grafo);         // Carrega o grafo a partir do arquivo
+            grafo.imprimir_grafo("grafo_matriz_saida.txt"); // Imprime o grafo para verificar
 
             //Testando algumas funções:
             cout << "Grau do vértice 0: " << grafo.get_grau(0) << endl;
@@ -88,13 +88,13 @@ int main(int argc, char* argv[]) {
         if(estrutura == "-m") {
             GrafoMatriz grafo(4, false, false, false);
 
-            grafo.novo_grafo("config.txt");
-            grafo.imprimir_grafo("grafo_impressao.txt");
+            grafo.novo_grafo(arquivo_desc);
+            grafo.imprimir_grafo(arquivo_saida);
         } else if(estrutura == "-l") {
             GrafoLista grafo(4, false, false, false);
 
-            grafo.novo_grafo("config.txt");
-            grafo.imprimir_grafo("grafo_impressao.txt");
+            grafo.novo_grafo(arquivo_desc);
+            grafo.imprimir_grafo(arquivo_saida);
         } else {
             imprimir_instrucao();
             return 1;
