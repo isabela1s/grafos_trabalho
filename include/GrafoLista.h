@@ -22,6 +22,8 @@ public:
     bool eh_completo() const override;
     bool eh_arvore() const override;
 
+    void novo_grafo(const std::string& nomeArquivo);
+
     void carregar_grafo(const std::string& nomeArquivo) override;
     void imprimir_grafo(const std::string& nomeArquivo) const override;
 

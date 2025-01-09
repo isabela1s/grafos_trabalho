@@ -2,6 +2,7 @@
 #include <fstream>
 #include <iostream>
 #include <queue>
+#include <random>
 
 // Construtor
 GrafoMatriz::GrafoMatriz(int numVertices, bool direcionado, bool verticePonderado, bool arestaPonderada)
@@ -247,4 +248,47 @@ bool GrafoMatriz::vertice_ponderado() const {
 
 bool GrafoMatriz::aresta_ponderada() const {
     return arestaPonderada;
+}
+
+void GrafoMatriz::novo_grafo(const std::string& nomeArquivo) {
+    std::ifstream arquivo(nomeArquivo);
+    if (!arquivo.is_open()) {
+        std::cerr << "Erro ao abrir o arquivo de configuração." << std::endl;
+        return;
+    }
+
+    // Lê as informações do arquivo de configuração
+    int numVertices, numArestas;
+    arquivo >> numVertices >> numArestas;
+
+    // Inicializa a matriz de adjacência com 0 (sem arestas)
+    matrizAdj.resize(numVertices, std::vector<int>(numVertices, 0));
+
+    // Gerador de números aleatórios
+    std::default_random_engine generator;
+    std::uniform_int_distribution<int> distribution(0, numVertices - 1); // Para os vértices
+    std::uniform_int_distribution<int> weightDistribution(1, 10);  // Para os pesos (caso o grafo seja ponderado)
+
+    // Gera as arestas aleatórias
+    for (int i = 0; i < numArestas; ++i) {
+        int origem = distribution(generator);
+        int destino = distribution(generator);
+
+        // Garante que não haverá laços (vértice se conectando consigo mesmo)
+        while (origem == destino) {
+            destino = distribution(generator);
+        }
+
+        // Gera um peso aleatório
+        int peso = weightDistribution(generator);
+
+        // Adiciona a aresta na matriz de adjacência
+        matrizAdj[origem][destino] = peso;
+        matrizAdj[destino][origem] = peso;  // Como o grafo é não direcionado
+
+        // Depuração: Verifica as arestas geradas
+        std::cout << "Aresta gerada: " << origem << " <-> " << destino << " (peso " << peso << ")" << std::endl;
+    }
+
+    std::cout << "Grafo aleatório gerado com " << numVertices << " vértices e " << numArestas << " arestas." << std::endl;
 }

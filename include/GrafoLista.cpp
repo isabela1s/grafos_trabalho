@@ -4,6 +4,7 @@
 #include <unordered_map>
 #include <stack>
 #include <queue>
+#include <random>
 
 using namespace std;
 
@@ -32,20 +33,11 @@ void GrafoLista::adicionar_vertice(int id) {
 }
 
 void GrafoLista::adicionar_aresta(int origem, int destino, int peso) {
-    if (listaAdj.find(origem) == listaAdj.end()) {
-        adicionar_vertice(origem);
-    }
-    if (listaAdj.find(destino) == listaAdj.end()) {
-        adicionar_vertice(destino);
-    }
+    // Adiciona aresta do vértice origem para o vértice destino
+    listaAdj[origem]->adicionar_aresta(destino, peso);
 
-    // Agora, adicione as arestas corretamente com o destino e o peso
-    listaAdj[origem]->adicionar_aresta(destino, peso); // Passa os dois parâmetros
-    if (!direcionado) {
-        listaAdj[destino]->adicionar_aresta(origem, peso); // Passa os dois parâmetros
-    }
-
-    numArestas++;
+    // Se o grafo for não direcionado, adiciona aresta no sentido inverso
+    listaAdj[destino]->adicionar_aresta(origem, peso);
 }
 
 int GrafoLista::n_conexo() const {
@@ -81,22 +73,18 @@ void GrafoLista::imprimir_grafo(const std::string& nomeArquivo) const {
 
         // Verifica as conexões de cada vértice
         while (aresta != nullptr) {
-            // Evita imprimir a aresta duas vezes se o grafo for não direcionado
-            if (aresta->destino > vertice || direcionado) {
-                if (!primeiraAresta) {
-                    arquivo << " "; // Adiciona espaço entre os destinos
-                }
+            if (!primeiraAresta) {
+                arquivo << " "; // Adiciona espaço entre os destinos
+            }
 
-                arquivo << aresta->destino;
-
-                if (aresta->peso != -1) {  // Se houver peso
-                    arquivo << " (peso " << aresta->peso << ")";
-                }
-
-                primeiraAresta = false;
+            // Se houver peso, imprime o peso da aresta
+            arquivo << aresta->destino;
+            if (aresta->peso != -1) {
+                arquivo << " (peso " << aresta->peso << ")";
             }
 
             aresta = aresta->prox;
+            primeiraAresta = false;
         }
         arquivo << std::endl;
     }
@@ -290,4 +278,50 @@ void GrafoLista::dfs_ponte(int id, int parent, std::unordered_map<int, int>& dis
         }
         aresta = aresta->prox;
     }
+}
+
+void GrafoLista::novo_grafo(const std::string& nomeArquivo) {
+    std::ifstream arquivo(nomeArquivo);
+    if (!arquivo.is_open()) {
+        std::cerr << "Erro ao abrir o arquivo de configuração." << std::endl;
+        return;
+    }
+
+    // Lê as informações do arquivo de configuração
+    int numVertices, numArestas;
+    arquivo >> numVertices >> numArestas;
+
+    // Cria o grafo com o número de vértices
+    listaAdj.clear(); // Limpa a lista de adjacência antes de criar o novo grafo
+    for (int i = 0; i < numVertices; ++i) {
+        listaAdj[i] = new Vertice(i);
+    }
+
+    // Gerador de números aleatórios
+    std::default_random_engine generator;
+    std::uniform_int_distribution<int> distribution(0, numVertices - 1); // Para os vértices
+    std::uniform_int_distribution<int> weightDistribution(1, 10);  // Para os pesos (caso o grafo seja ponderado)
+
+    // Gera as arestas aleatórias
+    for (int i = 0; i < numArestas; ++i) {
+        int origem = distribution(generator);
+        int destino = distribution(generator);
+
+        // Garante que não haverá laços (vértice se conectando consigo mesmo)
+        while (origem == destino) {
+            destino = distribution(generator);
+        }
+
+        // Gera um peso aleatório
+        int peso = weightDistribution(generator);
+
+        // Adiciona a aresta no grafo (não direcionado)
+        listaAdj[origem]->adicionar_aresta(destino, peso);
+        listaAdj[destino]->adicionar_aresta(origem, peso);  // Como o grafo é não direcionado
+
+        // Depuração: Verifica as arestas geradas
+        std::cout << "Aresta gerada: " << origem << " <-> " << destino << " (peso " << peso << ")" << std::endl;
+    }
+
+    std::cout << "Grafo aleatório gerado com " << numVertices << " vértices e " << numArestas << " arestas." << std::endl;
 }
