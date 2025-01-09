@@ -1,5 +1,6 @@
 {
     "files.associations": {
+<<<<<<< HEAD
         "*.java": "java",
         "array": "cpp",
         "atomic": "cpp",
@@ -52,5 +53,11 @@
         "text_encoding": "cpp",
         "typeinfo": "cpp",
         "variant": "cpp"
+=======
+        "fstream": "cpp",
+        "cstdlib": "cpp",
+        "vector": "cpp",
+        "ostream": "cpp"
+>>>>>>> 569d15db7579c82387f7b708466ff3d566dd747f
     }
 }
