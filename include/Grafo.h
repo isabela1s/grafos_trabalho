@@ -12,6 +12,7 @@ public:
     virtual int n_conexo() const = 0;
     virtual int get_grau(int vertice) const = 0;
     virtual bool possui_ponte() const = 0;
+    void novo_grafo(const std::string& nomeArquivo);
 
     virtual void carregar_grafo(const std::string& nomeArquivo) = 0;
     virtual void imprimir_grafo(const std::string& nomeArquivo) const = 0;
