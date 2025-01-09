@@ -3,7 +3,66 @@
 #include <iostream>
 using namespace std;
 
-int main() {
+void imprimir_instrucao() {
+    cout << "Uso do programa:" << endl;
+    cout << "  main.out -d -m <arquivo_grafo>  # Descrever grafo com matriz" << endl;
+    cout << "  main.out -d -l <arquivo_grafo>  # Descrever grafo com lista" << endl;
+    cout << "  main.out -c -m <arquivo_desc> <arquivo_saida>  # Criar grafo aleatório com matriz" << endl;
+    cout << "  main.out -c -l <arquivo_desc> <arquivo_saida>  # Criar grafo aleatório com lista" << endl;
+}
+
+int main(int argc, char* argv[]) {
+
+    if(argc < 3) {
+        imprimir_instrucao();
+        return 1;
+    }
+
+    string modo = argv[1];
+    string estrutura = argv[2];
+
+    if(modo == "-d") {
+        // Descrever
+        if (argc != 4) {
+            imprimir_instrucao();
+            return 1;
+        }
+
+        string arquivo_grafo = argv[3];
+
+        if(estrutura == "-m") {
+            // matriz
+        } else if(estrutura == "-l") {
+            // lista
+        } else {
+            imprimir_instrucao();
+            return 1;
+        }
+
+    } else if(modo == "-c") {
+        // Criar aleatório
+        if (argc != 5) {
+            imprimir_instrucao();
+            return 1;
+        }
+
+        string arquivo_desc = argv[3];
+        string arquivo_saida = argv[4];
+
+        if(estrutura == "-m") {
+            // Matriz aleatório
+        } else if(estrutura == "-l") {
+            // Lista aleatória
+        } else {
+            imprimir_instrucao();
+            return 1;
+        }
+
+    } else {
+        imprimir_instrucao();
+        return 1;
+    }
+
     //GrafoMatriz grafo(4, false, false, false); // Inicializa o grafo com 4 vértices
     //grafo.carregar_grafo("grafo_teste.txt");         // Carrega o grafo a partir do arquivo
     //grafo.imprimir_grafo("grafo_matriz_teste.txt"); // Imprime o grafo para verificar
