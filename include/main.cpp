@@ -22,20 +22,20 @@ int main() {
     //grafo.adicionar_aresta(3, 0); // Aresta entre 3 e 0
 
     // Testando funções
-    std::cout << "Número de componentes conexos: " << grafo.n_conexo() << std::endl;
-    std::cout << "Grau do vértice 0: " << grafo.get_grau(0) << std::endl;
-    std::cout << "O grafo é bipartido? " << (grafo.eh_bipartido() ? "Sim" : "Não") << std::endl;
-    std::cout << "O grafo é completo? " << (grafo.eh_completo() ? "Sim" : "Não") << std::endl;
-    std::cout << "O grafo é uma árvore? " << (grafo.eh_arvore() ? "Sim" : "Não") << std::endl;
-    std::cout << "O grafo possui articulação? " << (grafo.possui_articulacao() ? "Sim" : "Não") << std::endl;
-    std::cout << "O grafo possui ponte? " << (grafo.possui_ponte() ? "Sim" : "Não") << std::endl;
-    std::cout << "Número de componentes conexos: " << grafo.n_conexo() << std::endl;
+    cout << "Número de componentes conexos: " << grafo.n_conexo() << endl;
+    cout << "Grau do vértice 0: " << grafo.get_grau(0) << endl;
+    cout << "O grafo é bipartido? " << (grafo.eh_bipartido() ? "Sim" : "Não") << endl;
+    cout << "O grafo é completo? " << (grafo.eh_completo() ? "Sim" : "Não") << endl;
+    cout << "O grafo é uma árvore? " << (grafo.eh_arvore() ? "Sim" : "Não") << endl;
+    cout << "O grafo possui articulação? " << (grafo.possui_articulacao() ? "Sim" : "Não") << endl;
+    cout << "O grafo possui ponte? " << (grafo.possui_ponte() ? "Sim" : "Não") << endl;
+    cout << "Número de componentes conexos: " << grafo.n_conexo() << endl;
 
-    std::cout << "O grafo é bipartido? " << (grafo.eh_bipartido() ? "Sim" : "Não") << std::endl;
-    std::cout << "O grafo é completo? " << (grafo.eh_completo() ? "Sim" : "Não") << std::endl;
-    std::cout << "O grafo é uma árvore? " << (grafo.eh_arvore() ? "Sim" : "Não") << std::endl;
-    std::cout << "O grafo possui articulação? " << (grafo.possui_articulacao() ? "Sim" : "Não") << std::endl;
-    std::cout << "O grafo possui ponte? " << (grafo.possui_ponte() ? "Sim" : "Não") << std::endl;
+    cout << "O grafo é bipartido? " << (grafo.eh_bipartido() ? "Sim" : "Não") << endl;
+    cout << "O grafo é completo? " << (grafo.eh_completo() ? "Sim" : "Não") << endl;
+    cout << "O grafo é uma árvore? " << (grafo.eh_arvore() ? "Sim" : "Não") << endl;
+    cout << "O grafo possui articulação? " << (grafo.possui_articulacao() ? "Sim" : "Não") << endl;
+    cout << "O grafo possui ponte? " << (grafo.possui_ponte() ? "Sim" : "Não") << endl;
     // Imprimindo o grafo (caso você tenha implementado imprimir_grafo)
     //grafo.imprimir_grafo("grafo_impressao.txt");
 
@@ -65,13 +65,13 @@ int main() {
     //grafo.adicionar_aresta(3, 0); // Aresta entre 3 e 0
 
     // Testando funções
-    //std::cout << "Número de componentes conexos: " << grafo.n_conexo() << std::endl;
-    //std::cout << "Grau do vértice 0: " << grafo.get_grau(0) << std::endl;
-    //std::cout << "O grafo é bipartido? " << (grafo.eh_bipartido() ? "Sim" : "Não") << std::endl;
-    //std::cout << "O grafo é completo? " << (grafo.eh_completo() ? "Sim" : "Não") << std::endl;
-    //std::cout << "O grafo é uma árvore? " << (grafo.eh_arvore() ? "Sim" : "Não") << std::endl;
-    //std::cout << "O grafo possui articulação? " << (grafo.possui_articulacao() ? "Sim" : "Não") << std::endl;
-    //std::cout << "O grafo possui ponte? " << (grafo.possui_ponte() ? "Sim" : "Não") << std::endl;
+    //cout << "Número de componentes conexos: " << grafo.n_conexo() << endl;
+    //cout << "Grau do vértice 0: " << grafo.get_grau(0) << endl;
+    //cout << "O grafo é bipartido? " << (grafo.eh_bipartido() ? "Sim" : "Não") << endl;
+    //cout << "O grafo é completo? " << (grafo.eh_completo() ? "Sim" : "Não") << endl;
+    //cout << "O grafo é uma árvore? " << (grafo.eh_arvore() ? "Sim" : "Não") << endl;
+    //cout << "O grafo possui articulação? " << (grafo.possui_articulacao() ? "Sim" : "Não") << endl;
+    //cout << "O grafo possui ponte? " << (grafo.possui_ponte() ? "Sim" : "Não") << endl;
 
     // Imprimindo o grafo (caso você tenha implementado imprimir_grafo)
     //grafo.imprimir_grafo("grafo_impressao.txt");

@@ -9,6 +9,8 @@
 #include <iostream>
 #include <queue>
 
+using namespace std;
+
 class GrafoLista : public Grafo {
 public:
     GrafoLista(int numVertices, bool direcionado, bool verticePonderado, bool arestaPonderada);
@@ -22,10 +24,10 @@ public:
     bool eh_completo() const override;
     bool eh_arvore() const override;
 
-    void novo_grafo(const std::string& nomeArquivo);
+    void novo_grafo(const string& nomeArquivo);
 
-    void carregar_grafo(const std::string& nomeArquivo) override;
-    void imprimir_grafo(const std::string& nomeArquivo) const override;
+    void carregar_grafo(const string& nomeArquivo) override;
+    void imprimir_grafo(const string& nomeArquivo) const override;
 
     void adicionar_aresta(int origem, int destino, int peso = 1); // Adiciona aresta com peso
     void adicionar_vertice(int id); // Adiciona um novo vértice ao grafo
@@ -50,17 +52,17 @@ private:
         }
     };
 
-    std::unordered_map<int, Vertice*> listaAdj;
+    unordered_map<int, Vertice*> listaAdj;
 
-    void dfs(int id, std::unordered_map<int, bool>& visitados) const;
-    void dfs_pontes(int id, int parent, std::unordered_map<int, int>& discovery,
-                    std::unordered_map<int, int>& low, int& time, bool& temPonte);
+    void dfs(int id, unordered_map<int, bool>& visitados) const;
+    void dfs_pontes(int id, int parent, unordered_map<int, int>& discovery,
+                    unordered_map<int, int>& low, int& time, bool& temPonte);
     Vertice* get_vertice(int id) const;
-    void dfs_articulacao(int id, int parent, std::unordered_map<int, int>& discovery,
-                          std::unordered_map<int, int>& low, std::unordered_map<int, bool>& visitados,
+    void dfs_articulacao(int id, int parent, unordered_map<int, int>& discovery,
+                          unordered_map<int, int>& low, unordered_map<int, bool>& visitados,
                           int& time, bool& temArticulacao) const;
-    void dfs_ponte(int id, int parent, std::unordered_map<int, int>& discovery,
-                   std::unordered_map<int, int>& low, std::unordered_map<int, bool>& visitados,
+    void dfs_ponte(int id, int parent, unordered_map<int, int>& discovery,
+                   unordered_map<int, int>& low, unordered_map<int, bool>& visitados,
                    int& time, bool& temPonte) const;
 };
 

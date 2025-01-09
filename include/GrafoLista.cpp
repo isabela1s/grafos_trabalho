@@ -56,10 +56,10 @@ int GrafoLista::n_conexo() const {
     return componentes;
 }
 
-void GrafoLista::imprimir_grafo(const std::string& nomeArquivo) const {
-    std::ofstream arquivo(nomeArquivo);
+void GrafoLista::imprimir_grafo(const string& nomeArquivo) const {
+    ofstream arquivo(nomeArquivo);
     if (!arquivo.is_open()) {
-        std::cerr << "Erro ao abrir o arquivo para escrita." << std::endl;
+        cerr << "Erro ao abrir o arquivo para escrita." << endl;
         return;
     }
 
@@ -86,11 +86,11 @@ void GrafoLista::imprimir_grafo(const std::string& nomeArquivo) const {
             aresta = aresta->prox;
             primeiraAresta = false;
         }
-        arquivo << std::endl;
+        arquivo << endl;
     }
 
     arquivo.close();
-    std::cout << "Grafo salvo em " << nomeArquivo << std::endl;
+    cout << "Grafo salvo em " << nomeArquivo << endl;
 }
 
 bool GrafoLista::eh_completo() const {
@@ -122,10 +122,10 @@ int GrafoLista::get_grau(int vertice) const {
 }
 
 // Implementação básica para `carregar_grafo`
-void GrafoLista::carregar_grafo(const std::string& nomeArquivo) {
-    std::ifstream arquivo(nomeArquivo);
+void GrafoLista::carregar_grafo(const string& nomeArquivo) {
+    ifstream arquivo(nomeArquivo);
     if (!arquivo.is_open()) {
-        std::cerr << "Erro ao abrir o arquivo " << nomeArquivo << std::endl;
+        cerr << "Erro ao abrir o arquivo " << nomeArquivo << endl;
         return;
     }
 
@@ -183,7 +183,7 @@ bool GrafoLista::possui_ponte() const {
 }
 
 bool GrafoLista::eh_bipartido() const {
-    std::unordered_map<int, int> cores;
+    unordered_map<int, int> cores;
     for (const auto& pair : listaAdj) {
         cores[pair.first] = -1; // Não colorido
     }
@@ -192,7 +192,7 @@ bool GrafoLista::eh_bipartido() const {
         int id = pair.first;
         if (cores[id] == -1) {
             // BFS para verificar bipartição
-            std::queue<int> fila;
+            queue<int> fila;
             fila.push(id);
             cores[id] = 0;
 
@@ -217,7 +217,7 @@ bool GrafoLista::eh_bipartido() const {
     return true; // É bipartido
 }
 
-void GrafoLista::dfs(int id, std::unordered_map<int, bool>& visitados) const {
+void GrafoLista::dfs(int id, unordered_map<int, bool>& visitados) const {
     visitados[id] = true; // Marca o vértice como visitado
     Aresta* aresta = listaAdj.at(id)->arestas;
     while (aresta != nullptr) {
@@ -228,8 +228,8 @@ void GrafoLista::dfs(int id, std::unordered_map<int, bool>& visitados) const {
     }
 }
 
-void GrafoLista::dfs_articulacao(int id, int parent, std::unordered_map<int, int>& discovery,
-                                  std::unordered_map<int, int>& low, std::unordered_map<int, bool>& visitados,
+void GrafoLista::dfs_articulacao(int id, int parent, unordered_map<int, int>& discovery,
+                                  unordered_map<int, int>& low, unordered_map<int, bool>& visitados,
                                   int& time, bool& temArticulacao) const {
     visitados[id] = true;
     discovery[id] = low[id] = ++time;
@@ -243,7 +243,7 @@ void GrafoLista::dfs_articulacao(int id, int parent, std::unordered_map<int, int
             dfs_articulacao(vizinho, id, discovery, low, visitados, time, temArticulacao);
 
             // Verifica se o vizinho é um ponto de articulação
-            low[id] = std::min(low[id], low[vizinho]);
+            low[id] = min(low[id], low[vizinho]);
             if (parent == -1 && filhos > 1) {
                 temArticulacao = true;
             }
@@ -251,14 +251,14 @@ void GrafoLista::dfs_articulacao(int id, int parent, std::unordered_map<int, int
                 temArticulacao = true;
             }
         } else if (vizinho != parent) {
-            low[id] = std::min(low[id], discovery[vizinho]);
+            low[id] = min(low[id], discovery[vizinho]);
         }
         aresta = aresta->prox;
     }
 }
 
-void GrafoLista::dfs_ponte(int id, int parent, std::unordered_map<int, int>& discovery,
-                           std::unordered_map<int, int>& low, std::unordered_map<int, bool>& visitados,
+void GrafoLista::dfs_ponte(int id, int parent, unordered_map<int, int>& discovery,
+                           unordered_map<int, int>& low, unordered_map<int, bool>& visitados,
                            int& time, bool& temPonte) const {
     visitados[id] = true;
     discovery[id] = low[id] = ++time;
@@ -269,21 +269,21 @@ void GrafoLista::dfs_ponte(int id, int parent, std::unordered_map<int, int>& dis
         if (!visitados[vizinho]) {
             dfs_ponte(vizinho, id, discovery, low, visitados, time, temPonte);
 
-            low[id] = std::min(low[id], low[vizinho]);
+            low[id] = min(low[id], low[vizinho]);
             if (low[vizinho] > discovery[id]) {
                 temPonte = true; // Aresta (id, vizinho) é uma ponte
             }
         } else if (vizinho != parent) {
-            low[id] = std::min(low[id], discovery[vizinho]);
+            low[id] = min(low[id], discovery[vizinho]);
         }
         aresta = aresta->prox;
     }
 }
 
-void GrafoLista::novo_grafo(const std::string& nomeArquivo) {
-    std::ifstream arquivo(nomeArquivo);
+void GrafoLista::novo_grafo(const string& nomeArquivo) {
+    ifstream arquivo(nomeArquivo);
     if (!arquivo.is_open()) {
-        std::cerr << "Erro ao abrir o arquivo de configuração." << std::endl;
+        cerr << "Erro ao abrir o arquivo de configuração." << endl;
         return;
     }
 
@@ -298,9 +298,9 @@ void GrafoLista::novo_grafo(const std::string& nomeArquivo) {
     }
 
     // Gerador de números aleatórios
-    std::default_random_engine generator;
-    std::uniform_int_distribution<int> distribution(0, numVertices - 1); // Para os vértices
-    std::uniform_int_distribution<int> weightDistribution(1, 10);  // Para os pesos (caso o grafo seja ponderado)
+    default_random_engine generator;
+    uniform_int_distribution<int> distribution(0, numVertices - 1); // Para os vértices
+    uniform_int_distribution<int> weightDistribution(1, 10);  // Para os pesos (caso o grafo seja ponderado)
 
     // Gera as arestas aleatórias
     for (int i = 0; i < numArestas; ++i) {
@@ -319,9 +319,7 @@ void GrafoLista::novo_grafo(const std::string& nomeArquivo) {
         listaAdj[origem]->adicionar_aresta(destino, peso);
         listaAdj[destino]->adicionar_aresta(origem, peso);  // Como o grafo é não direcionado
 
-        // Depuração: Verifica as arestas geradas
-        std::cout << "Aresta gerada: " << origem << " <-> " << destino << " (peso " << peso << ")" << std::endl;
     }
 
-    std::cout << "Grafo aleatório gerado com " << numVertices << " vértices e " << numArestas << " arestas." << std::endl;
+    cout << "Grafo aleatório gerado com " << numVertices << " vértices e " << numArestas << " arestas." << endl;
 }

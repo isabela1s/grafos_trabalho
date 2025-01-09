@@ -4,10 +4,12 @@
 #include <queue>
 #include <random>
 
+using namespace std;
+
 // Construtor
 GrafoMatriz::GrafoMatriz(int numVertices, bool direcionado, bool verticePonderado, bool arestaPonderada)
     : Grafo(numVertices, direcionado, verticePonderado, arestaPonderada) {
-    matrizAdj.resize(numVertices, std::vector<int>(numVertices, 0)); // Inicializa matriz com 0
+    matrizAdj.resize(numVertices, vector<int>(numVertices, 0)); // Inicializa matriz com 0
 }
 
 // Destrutor
@@ -34,8 +36,8 @@ void GrafoMatriz::adicionar_aresta(int origem, int destino, int peso) {
 // Esqueleto das funções obrigatórias
 
 bool GrafoMatriz::eh_bipartido() const {
-    std::vector<int> cores(numVertices, -1); // -1 = Não colorido
-    std::queue<int> fila;
+    vector<int> cores(numVertices, -1); // -1 = Não colorido
+    queue<int> fila;
 
     for (int i = 0; i < numVertices; ++i) {
         if (cores[i] == -1) { // Não visitado
@@ -63,7 +65,7 @@ bool GrafoMatriz::eh_bipartido() const {
 }
 
 int GrafoMatriz::n_conexo() const {
-    std::vector<bool> visitados(numVertices, false);
+    vector<bool> visitados(numVertices, false);
     int componentes = 0;
 
     for (int i = 0; i < numVertices; ++i) {
@@ -136,7 +138,7 @@ bool GrafoMatriz::possui_articulacao() const {
         }
 
         int novosComponentes = 0;
-        std::vector<bool> visitados(numVertices, false);
+        vector<bool> visitados(numVertices, false);
         for (int i = 0; i < numVertices; ++i) {
             if (!visitados[i]) {
                 novosComponentes++;
@@ -152,7 +154,7 @@ bool GrafoMatriz::possui_articulacao() const {
     return false; // Nenhum ponto de articulação encontrado
 }
 // DFS modificado para usar a cópia da matriz
-void GrafoMatriz::dfs(int vertice, std::vector<bool>& visitados, const std::vector<std::vector<int>>& matriz) const {
+void GrafoMatriz::dfs(int vertice, vector<bool>& visitados, const vector<vector<int>>& matriz) const {
     visitados[vertice] = true;
     for (int i = 0; i < numVertices; ++i) {
         if (matriz[vertice][i] != 0 && !visitados[i]) { // Verifica aresta e não visitado
@@ -160,7 +162,7 @@ void GrafoMatriz::dfs(int vertice, std::vector<bool>& visitados, const std::vect
         }
     }
 }
-void GrafoMatriz::dfs(int vertice, std::vector<bool>& visitados) const {
+void GrafoMatriz::dfs(int vertice, vector<bool>& visitados) const {
     visitados[vertice] = true;
     for (int i = 0; i < numVertices; ++i) {
         if (matrizAdj[vertice][i] != 0 && !visitados[i]) { // Verifica aresta e não visitado
@@ -185,11 +187,11 @@ bool GrafoMatriz::eh_arvore() const {
     return (n_conexo() == 1) && (numArestas == numVertices - 1);
 }
 
-void GrafoMatriz::carregar_grafo(const std::string& nomeArquivo) {
-    std::ifstream arquivo(nomeArquivo);
+void GrafoMatriz::carregar_grafo(const string& nomeArquivo) {
+    ifstream arquivo(nomeArquivo);
 
     if (!arquivo.is_open()) {
-        std::cerr << "Erro ao abrir o arquivo: " << nomeArquivo << std::endl;
+        cerr << "Erro ao abrir o arquivo: " << nomeArquivo << endl;
         return;
     }
 
@@ -198,7 +200,7 @@ void GrafoMatriz::carregar_grafo(const std::string& nomeArquivo) {
     arquivo >> numVerticesArquivo;
 
     if (numVerticesArquivo != numVertices) {
-        std::cerr << "Número de vértices no arquivo não corresponde ao grafo." << std::endl;
+        cerr << "Número de vértices no arquivo não corresponde ao grafo." << endl;
         return;
     }
 
@@ -216,10 +218,10 @@ void GrafoMatriz::carregar_grafo(const std::string& nomeArquivo) {
     arquivo.close();
 }
 
-void GrafoMatriz::imprimir_grafo(const std::string& nomeArquivo) const {
-    std::ofstream arquivo(nomeArquivo);
+void GrafoMatriz::imprimir_grafo(const string& nomeArquivo) const {
+    ofstream arquivo(nomeArquivo);
     if (!arquivo.is_open()) {
-        std::cerr << "Erro ao abrir o arquivo para escrita." << std::endl;
+        cerr << "Erro ao abrir o arquivo para escrita." << endl;
         return;
     }
 
@@ -231,7 +233,7 @@ void GrafoMatriz::imprimir_grafo(const std::string& nomeArquivo) const {
         arquivo << "\n";
     }
     arquivo.close();
-    std::cout << "Grafo salvo em " << nomeArquivo << std::endl;
+    cout << "Grafo salvo em " << nomeArquivo << endl;
 }
 
 int GrafoMatriz::get_ordem() const {
@@ -250,10 +252,10 @@ bool GrafoMatriz::aresta_ponderada() const {
     return arestaPonderada;
 }
 
-void GrafoMatriz::novo_grafo(const std::string& nomeArquivo) {
-    std::ifstream arquivo(nomeArquivo);
+void GrafoMatriz::novo_grafo(const string& nomeArquivo) {
+    ifstream arquivo(nomeArquivo);
     if (!arquivo.is_open()) {
-        std::cerr << "Erro ao abrir o arquivo de configuração." << std::endl;
+        cerr << "Erro ao abrir o arquivo de configuração." << endl;
         return;
     }
 
@@ -262,12 +264,12 @@ void GrafoMatriz::novo_grafo(const std::string& nomeArquivo) {
     arquivo >> numVertices >> numArestas;
 
     // Inicializa a matriz de adjacência com 0 (sem arestas)
-    matrizAdj.resize(numVertices, std::vector<int>(numVertices, 0));
+    matrizAdj.resize(numVertices, vector<int>(numVertices, 0));
 
     // Gerador de números aleatórios
-    std::default_random_engine generator;
-    std::uniform_int_distribution<int> distribution(0, numVertices - 1); // Para os vértices
-    std::uniform_int_distribution<int> weightDistribution(1, 10);  // Para os pesos (caso o grafo seja ponderado)
+    default_random_engine generator;
+    uniform_int_distribution<int> distribution(0, numVertices - 1); // Para os vértices
+    uniform_int_distribution<int> weightDistribution(1, 10);  // Para os pesos (caso o grafo seja ponderado)
 
     // Gera as arestas aleatórias
     for (int i = 0; i < numArestas; ++i) {
@@ -287,8 +289,8 @@ void GrafoMatriz::novo_grafo(const std::string& nomeArquivo) {
         matrizAdj[destino][origem] = peso;  // Como o grafo é não direcionado
 
         // Depuração: Verifica as arestas geradas
-        std::cout << "Aresta gerada: " << origem << " <-> " << destino << " (peso " << peso << ")" << std::endl;
+        cout << "Aresta gerada: " << origem << " <-> " << destino << " (peso " << peso << ")" << endl;
     }
 
-    std::cout << "Grafo aleatório gerado com " << numVertices << " vértices e " << numArestas << " arestas." << std::endl;
+    cout << "Grafo aleatório gerado com " << numVertices << " vértices e " << numArestas << " arestas." << endl;
 }
