@@ -32,6 +32,7 @@ protected:
     bool direcionado;
     bool verticePonderado;
     bool arestaPonderada;
+    int* pesosVertices;
 
     virtual int* get_vizinhos(int vertice, int& tamanho) const = 0;
     virtual bool existe_aresta(int origem, int destino) const = 0;

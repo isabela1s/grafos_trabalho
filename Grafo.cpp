@@ -27,9 +27,7 @@ bool Grafo::aresta_ponderada() const {
 }
 
 bool Grafo::eh_completo() const {
-    int totalArestas = direcionado
-                            ? numVertices * (numVertices - 1)
-                            : numVertices * (numVertices - 1) / 2;
+    int totalArestas = direcionado ? numVertices * (numVertices - 1) : numVertices * (numVertices - 1) / 2;
     return numArestas == totalArestas;
 }
 

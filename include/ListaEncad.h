@@ -12,9 +12,9 @@ class ListaEncad {
         void removeNo(int val);
         bool busca(int val);
         void imprimeLista();
+        No* primeiro;
 
     private:
-        No* primeiro;
 };
 
 #endif

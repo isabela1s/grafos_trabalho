@@ -75,31 +75,6 @@ int main(int argc, char* argv[]) {
             return 1;
         }
 
-    } else if(modo == "-c") {
-        // Criar aleatório
-        if (argc != 5) {
-            imprimir_instrucao();
-            return 1;
-        }
-
-        string arquivo_desc = argv[3];
-        string arquivo_saida = argv[4];
-
-        if(estrutura == "-m") {
-            GrafoMatriz grafo(4, false, false, false);
-
-            grafo.novo_grafo(arquivo_desc);
-            grafo.imprimir_grafo(arquivo_saida);
-        } else if(estrutura == "-l") {
-            GrafoLista grafo(4, false, false, false);
-
-            grafo.novo_grafo(arquivo_desc);
-            grafo.imprimir_grafo(arquivo_saida);
-        } else {
-            imprimir_instrucao();
-            return 1;
-        }
-
     } else {
         imprimir_instrucao();
         return 1;
