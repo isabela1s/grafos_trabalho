@@ -2,8 +2,6 @@
 #define GRAFOMATRIZ_H
 
 #include "Grafo.h"
-#include <vector>
-#include <string>
 #include <iostream>
 
 class GrafoMatriz : public Grafo {
@@ -11,31 +9,18 @@ public:
     GrafoMatriz(int numVertices, bool direcionado, bool verticePonderado, bool arestaPonderada);
     ~GrafoMatriz();
 
-    bool eh_bipartido() const override;
-    int n_conexo() const override;
-    int get_grau(int vertice) const override;
-    bool possui_articulacao() const override;
-    bool possui_ponte() const override;
-    bool eh_completo() const override;
-    bool eh_arvore() const override;
-    void novo_grafo(const std::string& nomeArquivo);
-
-    void carregar_grafo(const std::string& nomeArquivo) override;
-    void imprimir_grafo(const std::string& nomeArquivo) const override;
-
-    void adicionar_vertice(); // Adiciona um vértice na matriz (aumenta tamanho)
-    void adicionar_aresta(int origem, int destino, int peso = 1); // Adiciona aresta com peso
-
-    // Funções auxiliares
-    int get_ordem() const;
-    bool eh_direcionado() const;
-    bool vertice_ponderado() const;
-    bool aresta_ponderada() const;
+    void carregar_grafo(const std::string& nomeArquivo);
+    void imprimir_grafo(const std::string& nomeArquivo) const;
 
 private:
-    std::vector<std::vector<int>> matrizAdj; // Matriz de adjacência
-    void dfs(int vertice, std::vector<bool>& visitados) const; // Versão original (para n_conexo)
-    void dfs(int vertice, std::vector<bool>& visitados, const std::vector<std::vector<int>>& matriz) const; // Para possui_articulacao
+    int** matrizAdj;
+    int* get_vizinhos(int vertice, int& tamanho) const override;
+    bool existe_aresta(int origem, int destino) const override;
+    Grafo* copia() const override;
+    void remover_vertice(int vertice) override;
+    void remover_aresta(int origem, int destino) override;
+    bool eh_vizinho(int u, int vizinho) const override;
+    void dfs(int vertice, int* visitados) const override;
 };
 
 #endif // GRAFOMATRIZ_H

@@ -1,59 +1,50 @@
 #include "GrafoLista.h"
 #include <fstream>
 #include <iostream>
-#include <unordered_map>
-#include <stack>
-#include <queue>
-#include <random>
 
 using namespace std;
 
 GrafoLista::GrafoLista(int numVertices, bool direcionado, bool verticePonderado, bool arestaPonderada)
-    : Grafo(numVertices, direcionado, verticePonderado, arestaPonderada) {}
+    : Grafo(numVertices, direcionado, verticePonderado, arestaPonderada), listaAdj(nullptr) {
+}
 
 GrafoLista::~GrafoLista() {
-    // Libera a memória alocada para os vértices e arestas
-    for (auto& [id, vertice] : listaAdj) {
-        Aresta* atual = vertice->arestas;
-        while (atual) {
-            Aresta* temp = atual;
-            atual = atual->prox;
+    NoVertice* atual = listaAdj;
+    while (atual) {
+        Vertice* vertice = atual->vertice;
+        Aresta* arestaAtual = vertice->arestas;
+
+        while (arestaAtual) {
+            Aresta* temp = arestaAtual;
+            arestaAtual = arestaAtual->prox;
             delete temp;
         }
+
         delete vertice;
+        NoVertice* tempVertice = atual;
+        atual = atual->prox;
+        delete tempVertice;
     }
-    listaAdj.clear();
 }
 
 void GrafoLista::adicionar_vertice(int id) {
-    if (listaAdj.find(id) == listaAdj.end()) {
-        listaAdj[id] = new Vertice(id);
-        numVertices++;
-    }
-}
-
-void GrafoLista::adicionar_aresta(int origem, int destino, int peso) {
-    // Adiciona aresta do vértice origem para o vértice destino
-    listaAdj[origem]->adicionar_aresta(destino, peso);
-
-    // Se o grafo for não direcionado, adiciona aresta no sentido inverso
-    listaAdj[destino]->adicionar_aresta(origem, peso);
-}
-
-int GrafoLista::n_conexo() const {
-    unordered_map<int, bool> visitados;
-    for (const auto& [id, _] : listaAdj) {
-        visitados[id] = false;
-    }
-
-    int componentes = 0;
-    for (const auto& [id, _] : listaAdj) {
-        if (!visitados[id]) {
-            dfs(id, visitados);
-            componentes++;
+    // Verifica se o vértice já existe
+    NoVertice* atual = listaAdj;
+    while (atual) {
+        if (atual->vertice->id == id) {
+            return;
         }
+        atual = atual->prox;
     }
-    return componentes;
+
+    // Criando novo vértice
+    Vertice* novoVertice = new Vertice(id);
+    NoVertice* novoNo = new NoVertice(novoVertice);
+
+    // Encadeando na lista de adjacência
+    novoNo->prox = listaAdj;
+    listaAdj = novoNo;
+    numVertices++;
 }
 
 void GrafoLista::imprimir_grafo(const std::string& nomeArquivo) const {
@@ -63,22 +54,28 @@ void GrafoLista::imprimir_grafo(const std::string& nomeArquivo) const {
         return;
     }
 
-    // Itera sobre todos os vértices
-    for (const auto& pair : listaAdj) {
-        int vertice = pair.first;
-        arquivo << "Vértice " << vertice << ": ";
+    // Percorre todos os vértices da lista ligada
+    NoVertice* atual = listaAdj;
+    if (!atual) {
+        std::cerr << "Lista de adjacência está vazia!" << std::endl;
+    }
 
-        Aresta* aresta = listaAdj.at(vertice)->arestas;
+    while (atual) {
+        int vertice = atual->vertice->id;
+        arquivo << "Vértice " << vertice << ": ";
+        std::cout << "Processando vértice " << vertice << std::endl;  // DEPURAÇÃO
+
+        Aresta* aresta = atual->vertice->arestas;
         bool primeiraAresta = true;
 
-        // Verifica as conexões de cada vértice
-        while (aresta != nullptr) {
+        while (aresta) {
             if (!primeiraAresta) {
-                arquivo << " "; // Adiciona espaço entre os destinos
+                arquivo << " ";
             }
 
-            // Se houver peso, imprime o peso da aresta
             arquivo << aresta->destino;
+            std::cout << " - Aresta para " << aresta->destino << " (peso: " << aresta->peso << ")" << std::endl; // DEPURAÇÃO
+
             if (aresta->peso != -1) {
                 arquivo << " (peso " << aresta->peso << ")";
             }
@@ -86,242 +83,197 @@ void GrafoLista::imprimir_grafo(const std::string& nomeArquivo) const {
             aresta = aresta->prox;
             primeiraAresta = false;
         }
+
         arquivo << std::endl;
+        atual = atual->prox;
     }
 
     arquivo.close();
     std::cout << "Grafo salvo em " << nomeArquivo << std::endl;
 }
 
-bool GrafoLista::eh_completo() const {
-    // Implementação básica para teste
-    return false;
-}
+int* GrafoLista::get_vizinhos(int vertice, int& tamanho) const {
+    NoVertice* atual = listaAdj;
 
-bool GrafoLista::eh_arvore() const {
-    // Implementação básica para teste
-    return false;
-}
-#include "GrafoLista.h"
-#include <fstream>
-#include <iostream>
-
-// Implementação básica para `get_grau`
-int GrafoLista::get_grau(int vertice) const {
-    if (listaAdj.find(vertice) == listaAdj.end()) {
-        return 0; // Se o vértice não existe, o grau é 0
-    }
-
-    int grau = 0;
-    Aresta* atual = listaAdj.at(vertice)->arestas;
     while (atual) {
-        grau++;
+        if (atual->vertice->id == vertice) {
+            Aresta* arestaAtual = atual->vertice->arestas;
+
+            // Contar quantos vizinhos existem
+            tamanho = 0;
+            Aresta* temp = arestaAtual;
+            while (temp) {
+                tamanho++;
+                temp = temp->prox;
+            }
+
+            // Criar array e armazenar vizinhos
+            int* vizinhos = new int[tamanho];
+            int i = 0;
+            while (arestaAtual) {
+                vizinhos[i++] = arestaAtual->destino;
+                arestaAtual = arestaAtual->prox;
+            }
+            return vizinhos;
+        }
         atual = atual->prox;
     }
-    return grau;
+
+    // Caso o vértice não seja encontrado, retorna nullptr
+    tamanho = 0;
+    return nullptr;
 }
 
-// Implementação básica para `carregar_grafo`
-void GrafoLista::carregar_grafo(const std::string& nomeArquivo) {
-    std::ifstream arquivo(nomeArquivo);
-    if (!arquivo.is_open()) {
-        std::cerr << "Erro ao abrir o arquivo " << nomeArquivo << std::endl;
-        return;
-    }
+bool GrafoLista::existe_aresta(int origem, int destino) const {
+    NoVertice* atual = listaAdj;
 
-    int origem, destino;
-    while (arquivo >> origem >> destino) {
-        adicionar_aresta(origem, destino);
-    }
-
-    arquivo.close();
-}
-
-bool GrafoLista::possui_articulacao() const {
-    // Implementação corrigida
-    int componentesOriginais = n_conexo();
-    for (auto it = listaAdj.begin(); it != listaAdj.end(); ++it) {
-        int id = it->first;
-
-        // Crie uma cópia da lista de adjacências
-        auto listaAdjCopia = listaAdj;
-        listaAdjCopia.erase(id);
-
-        // Recalcule os componentes conexos
-        if (n_conexo() > componentesOriginais) {
-            return true; // O grafo possui articulação
-        }
-    }
-    return false; // Nenhum vértice é articulação
-}
-
-bool GrafoLista::possui_ponte() const {
-    int componentesOriginais = n_conexo();
-
-    for (const auto& pair : listaAdj) {
-        int id = pair.first;
-        Vertice* vertice = pair.second;
-
-        Aresta* aresta = vertice->arestas;
-        while (aresta) {
-            // Crie uma cópia da lista de adjacências
-            auto listaAdjCopia = listaAdj;
-
-            // Remova temporariamente a aresta
-            listaAdjCopia[id]->arestas = listaAdjCopia[id]->arestas->prox;
-
-            // Recalcule os componentes conexos
-            if (n_conexo() > componentesOriginais) {
-                return true; // O grafo possui ponte
-            }
-
-            // Continue verificando
-            aresta = aresta->prox;
-        }
-    }
-    return false; // Nenhuma aresta é ponte
-}
-
-bool GrafoLista::eh_bipartido() const {
-    std::unordered_map<int, int> cores;
-    for (const auto& pair : listaAdj) {
-        cores[pair.first] = -1; // Não colorido
-    }
-
-    for (const auto& pair : listaAdj) {
-        int id = pair.first;
-        if (cores[id] == -1) {
-            // BFS para verificar bipartição
-            std::queue<int> fila;
-            fila.push(id);
-            cores[id] = 0;
-
-            while (!fila.empty()) {
-                int vertice = fila.front();
-                fila.pop();
-
-                for (Aresta* aresta = listaAdj.at(vertice)->arestas; aresta; aresta = aresta->prox) {
-                    int destino = aresta->destino;
-
-                    if (cores[destino] == -1) {
-                        cores[destino] = 1 - cores[vertice];
-                        fila.push(destino);
-                    } else if (cores[destino] == cores[vertice]) {
-                        return false; // Não é bipartido
-                    }
+    while (atual) {
+        if (atual->vertice->id == origem) {
+            Aresta* aresta = atual->vertice->arestas;
+            while (aresta) {
+                if (aresta->destino == destino) {
+                    return true;
                 }
+                aresta = aresta->prox;
             }
         }
+        atual = atual->prox;
     }
-
-    return true; // É bipartido
+    return false;
 }
 
-void GrafoLista::dfs(int id, std::unordered_map<int, bool>& visitados) const {
-    visitados[id] = true; // Marca o vértice como visitado
-    Aresta* aresta = listaAdj.at(id)->arestas;
-    while (aresta != nullptr) {
-        if (!visitados[aresta->destino]) {
-            dfs(aresta->destino, visitados); // Chama recursivamente para o próximo vértice
-        }
-        aresta = aresta->prox;
+void GrafoLista::remover_vertice(int vertice) {
+    NoVertice* atual = listaAdj;
+    NoVertice* anterior = nullptr;
+
+    // Remover todas as arestas que apontam para este vértice
+    NoVertice* aux = listaAdj;
+    while (aux) {
+        remover_aresta(aux->vertice->id, vertice);
+        aux = aux->prox;
     }
-}
 
-void GrafoLista::dfs_articulacao(int id, int parent, std::unordered_map<int, int>& discovery,
-                                  std::unordered_map<int, int>& low, std::unordered_map<int, bool>& visitados,
-                                  int& time, bool& temArticulacao) const {
-    visitados[id] = true;
-    discovery[id] = low[id] = ++time;
-
-    int filhos = 0;
-    Aresta* aresta = listaAdj.at(id)->arestas;
-    while (aresta != nullptr) {
-        int vizinho = aresta->destino;
-        if (!visitados[vizinho]) {
-            filhos++;
-            dfs_articulacao(vizinho, id, discovery, low, visitados, time, temArticulacao);
-
-            // Verifica se o vizinho é um ponto de articulação
-            low[id] = std::min(low[id], low[vizinho]);
-            if (parent == -1 && filhos > 1) {
-                temArticulacao = true;
+    // Remover o próprio vértice da lista de adjacência
+    while (atual) {
+        if (atual->vertice->id == vertice) {
+            if (anterior) {
+                anterior->prox = atual->prox;
+            } else {
+                listaAdj = atual->prox;
             }
-            if (parent != -1 && low[vizinho] >= discovery[id]) {
-                temArticulacao = true;
+
+            // Liberar memória das arestas
+            Aresta* arestaAtual = atual->vertice->arestas;
+            while (arestaAtual) {
+                Aresta* temp = arestaAtual;
+                arestaAtual = arestaAtual->prox;
+                delete temp;
             }
-        } else if (vizinho != parent) {
-            low[id] = std::min(low[id], discovery[vizinho]);
+
+            delete atual->vertice;
+            delete atual;
+            numVertices--;
+            return;
         }
-        aresta = aresta->prox;
+        anterior = atual;
+        atual = atual->prox;
     }
 }
 
-void GrafoLista::dfs_ponte(int id, int parent, std::unordered_map<int, int>& discovery,
-                           std::unordered_map<int, int>& low, std::unordered_map<int, bool>& visitados,
-                           int& time, bool& temPonte) const {
-    visitados[id] = true;
-    discovery[id] = low[id] = ++time;
+void GrafoLista::remover_aresta(int origem, int destino) {
+    NoVertice* atual = listaAdj;
 
-    Aresta* aresta = listaAdj.at(id)->arestas;
-    while (aresta != nullptr) {
-        int vizinho = aresta->destino;
-        if (!visitados[vizinho]) {
-            dfs_ponte(vizinho, id, discovery, low, visitados, time, temPonte);
+    while (atual) {
+        if (atual->vertice->id == origem) {
+            Aresta* arestaAtual = atual->vertice->arestas;
+            Aresta* anterior = nullptr;
 
-            low[id] = std::min(low[id], low[vizinho]);
-            if (low[vizinho] > discovery[id]) {
-                temPonte = true; // Aresta (id, vizinho) é uma ponte
+            while (arestaAtual) {
+                if (arestaAtual->destino == destino) {
+                    if (anterior) {
+                        anterior->prox = arestaAtual->prox;
+                    } else {
+                        atual->vertice->arestas = arestaAtual->prox;
+                    }
+                    delete arestaAtual;
+                    numArestas--;
+                    return;
+                }
+                anterior = arestaAtual;
+                arestaAtual = arestaAtual->prox;
             }
-        } else if (vizinho != parent) {
-            low[id] = std::min(low[id], discovery[vizinho]);
         }
-        aresta = aresta->prox;
+        atual = atual->prox;
     }
 }
 
-void GrafoLista::novo_grafo(const std::string& nomeArquivo) {
-    std::ifstream arquivo(nomeArquivo);
-    if (!arquivo.is_open()) {
-        std::cerr << "Erro ao abrir o arquivo de configuração." << std::endl;
-        return;
+bool GrafoLista::eh_vizinho(int u, int vizinho) const {
+    NoVertice* atual = listaAdj;
+
+    while (atual) {
+        if (atual->vertice->id == u) {
+            Aresta* aresta = atual->vertice->arestas;
+            while (aresta) {
+                if (aresta->destino == vizinho) {
+                    return true;
+                }
+                aresta = aresta->prox;
+            }
+        }
+        atual = atual->prox;
     }
+    return false;
+}
 
-    // Lê as informações do arquivo de configuração
-    int numVertices, numArestas;
-    arquivo >> numVertices >> numArestas;
+Grafo* GrafoLista::copia() const {
+    GrafoLista* novoGrafo = new GrafoLista(numVertices, direcionado, verticePonderado, arestaPonderada);
 
-    // Cria o grafo com o número de vértices
-    listaAdj.clear(); // Limpa a lista de adjacência antes de criar o novo grafo
-    for (int i = 0; i < numVertices; ++i) {
-        listaAdj[i] = new Vertice(i);
-    }
+    NoVertice* atual = listaAdj;
+    while (atual) {
+        novoGrafo->adicionar_vertice(atual->vertice->id);
 
-    // Gerador de números aleatórios
-    std::default_random_engine generator;
-    std::uniform_int_distribution<int> distribution(0, numVertices - 1); // Para os vértices
-    std::uniform_int_distribution<int> weightDistribution(1, 10);  // Para os pesos (caso o grafo seja ponderado)
-
-    // Gera as arestas aleatórias
-    for (int i = 0; i < numArestas; ++i) {
-        int origem = distribution(generator);
-        int destino = distribution(generator);
-
-        // Garante que não haverá laços (vértice se conectando consigo mesmo)
-        while (origem == destino) {
-            destino = distribution(generator);
+        Aresta* arestaAtual = atual->vertice->arestas;
+        while (arestaAtual) {
+            novoGrafo->adicionar_aresta(atual->vertice->id, arestaAtual->destino, arestaAtual->peso);
+            arestaAtual = arestaAtual->prox;
         }
 
-        // Gera um peso aleatório
-        int peso = weightDistribution(generator);
-
-        // Adiciona a aresta no grafo (não direcionado)
-        listaAdj[origem]->adicionar_aresta(destino, peso);
-        listaAdj[destino]->adicionar_aresta(origem, peso);  // Como o grafo é não direcionado
-
-        // Depuração: Verifica as arestas geradas
-        std::cout << "Aresta gerada: " << origem << " <-> " << destino << " (peso " << peso << ")" << std::endl;
+        atual = atual->prox;
     }
 
-    std::cout << "Grafo aleatório gerado com " << numVertices << " vértices e " << numArestas << " arestas." << std::endl;
+    return novoGrafo;
 }
+
+void GrafoLista::adicionar_aresta(int origem, int destino, int peso) {
+    NoVertice* atual = listaAdj;
+
+    // Encontra o vértice de origem
+    while (atual) {
+        if (atual->vertice->id == origem) {
+            // Cria nova aresta
+            Aresta* novaAresta = new Aresta(destino, peso);
+            novaAresta->prox = atual->vertice->arestas;
+            atual->vertice->arestas = novaAresta;
+            numArestas++;
+            return;
+        }
+        atual = atual->prox;
+    }
+}
+
+void GrafoLista::dfs(int vertice, int visitados[]) const {
+    visitados[vertice] = 1;
+
+    int tamanho = 0;
+    int* vizinhos = get_vizinhos(vertice, tamanho);
+
+    for (int i = 0; i < tamanho; i++) {
+        if (!visitados[vizinhos[i]]) {
+            dfs(vizinhos[i], visitados);
+        }
+    }
+
+    delete[] vizinhos; // Libera a memória alocada
+}
+
+

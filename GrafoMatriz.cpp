@@ -1,294 +1,121 @@
 #include "GrafoMatriz.h"
-#include <fstream>
 #include <iostream>
-#include <queue>
-#include <random>
+#include <fstream>
 
-// Construtor
+using namespace std;
+
 GrafoMatriz::GrafoMatriz(int numVertices, bool direcionado, bool verticePonderado, bool arestaPonderada)
     : Grafo(numVertices, direcionado, verticePonderado, arestaPonderada) {
-    matrizAdj.resize(numVertices, std::vector<int>(numVertices, 0)); // Inicializa matriz com 0
-}
-
-// Destrutor
-GrafoMatriz::~GrafoMatriz() {}
-
-// Adicionar vértice
-void GrafoMatriz::adicionar_vertice() {
-    for (auto& linha : matrizAdj) {
-        linha.push_back(0); // Adiciona uma coluna de 0 para o novo vértice
-    }
-    matrizAdj.emplace_back(matrizAdj.size() + 1, 0); // Adiciona uma nova linha
-    numVertices++;
-}
-
-// Adicionar aresta
-void GrafoMatriz::adicionar_aresta(int origem, int destino, int peso) {
-    matrizAdj[origem][destino] = peso;
-    if (!direcionado) {
-        matrizAdj[destino][origem] = peso; // Grafo não direcionado
-    }
-    numArestas++;
-}
-
-// Esqueleto das funções obrigatórias
-
-bool GrafoMatriz::eh_bipartido() const {
-    std::vector<int> cores(numVertices, -1); // -1 = Não colorido
-    std::queue<int> fila;
-
-    for (int i = 0; i < numVertices; ++i) {
-        if (cores[i] == -1) { // Não visitado
-            cores[i] = 0; // Primeira cor
-            fila.push(i);
-
-            while (!fila.empty()) {
-                int vertice = fila.front();
-                fila.pop();
-
-                for (int j = 0; j < numVertices; ++j) {
-                    if (matrizAdj[vertice][j] != 0) { // Aresta existe
-                        if (cores[j] == -1) { // Não colorido
-                            cores[j] = 1 - cores[vertice]; // Alterna cor
-                            fila.push(j);
-                        } else if (cores[j] == cores[vertice]) {
-                            return false; // Não é bipartido
-                        }
-                    }
-                }
-            }
-        }
-    }
-    return true; // É bipartido
-}
-
-int GrafoMatriz::n_conexo() const {
-    std::vector<bool> visitados(numVertices, false);
-    int componentes = 0;
-
-    for (int i = 0; i < numVertices; ++i) {
-        if (!visitados[i]) {
-            componentes++;
-            dfs(i, visitados); // Chama a versão de 2 parâmetros
-        }
-    }
-
-    return componentes;
-}
-int GrafoMatriz::get_grau(int vertice) const {
-    int grau = 0;
-    for (int i = 0; i < numVertices; ++i) {
-        if (matrizAdj[vertice][i] != 0) { // Conta as arestas conectadas
-            grau++;
-        }
-    }
-    return grau;
-}
-
-
-bool GrafoMatriz::possui_ponte() const {
-    // Número de componentes conexos no grafo original
-    int componentesOriginais = n_conexo();
-
-    // Cria uma cópia da matriz de adjacência
-    auto matrizCopia = matrizAdj;
-
-    for (int u = 0; u < numVertices; ++u) {
-        for (int v = 0; v < numVertices; ++v) {
-            if (matrizCopia[u][v] != 0) { // Existe aresta (u, v)
-                // Remove temporariamente a aresta (u, v)
-                int pesoBackup = matrizCopia[u][v];
-                matrizCopia[u][v] = 0;
-                if (!direcionado) {
-                    matrizCopia[v][u] = 0;
-                }
-
-                // Recalcula o número de componentes conexos com a cópia
-                int novosComponentes = n_conexo();
-
-                // Restaura a aresta (u, v)
-                matrizCopia[u][v] = pesoBackup;
-                if (!direcionado) {
-                    matrizCopia[v][u] = pesoBackup;
-                }
-
-                // Verifica se o número de componentes aumentou
-                if (novosComponentes > componentesOriginais) {
-                    return true; // Encontrou uma ponte
-                }
-            }
-        }
-    }
-
-    return false; // Nenhuma ponte encontrada
-}
-
-bool GrafoMatriz::possui_articulacao() const {
-    int componentesOriginais = n_conexo();
-
-    for (int v = 0; v < numVertices; ++v) {
-        auto matrizCopia = matrizAdj;
-
-        // Remove temporariamente o vértice v
-        for (int u = 0; u < numVertices; ++u) {
-            matrizCopia[v][u] = 0;
-            matrizCopia[u][v] = 0;
-        }
-
-        int novosComponentes = 0;
-        std::vector<bool> visitados(numVertices, false);
-        for (int i = 0; i < numVertices; ++i) {
-            if (!visitados[i]) {
-                novosComponentes++;
-                dfs(i, visitados, matrizCopia); // Chama a versão de 3 parâmetros
-            }
-        }
-
-        if (novosComponentes > componentesOriginais) {
-            return true; // Ponto de articulação encontrado
-        }
-    }
-
-    return false; // Nenhum ponto de articulação encontrado
-}
-// DFS modificado para usar a cópia da matriz
-void GrafoMatriz::dfs(int vertice, std::vector<bool>& visitados, const std::vector<std::vector<int>>& matriz) const {
-    visitados[vertice] = true;
-    for (int i = 0; i < numVertices; ++i) {
-        if (matriz[vertice][i] != 0 && !visitados[i]) { // Verifica aresta e não visitado
-            dfs(i, visitados, matriz); // Chamada recursiva
+    matrizAdj = new int*[numVertices];
+    for (int i = 0; i < numVertices; i++) {
+        matrizAdj[i] = new int[numVertices];
+        for (int j = 0; j < numVertices; j++) {
+            matrizAdj[i][j] = 0; // Inicializa sem arestas
         }
     }
 }
-void GrafoMatriz::dfs(int vertice, std::vector<bool>& visitados) const {
-    visitados[vertice] = true;
-    for (int i = 0; i < numVertices; ++i) {
-        if (matrizAdj[vertice][i] != 0 && !visitados[i]) { // Verifica aresta e não visitado
-            dfs(i, visitados); // Chamada recursiva
-        }
+
+GrafoMatriz::~GrafoMatriz() {
+    for (int i = 0; i < get_ordem(); i++) {
+        delete[] matrizAdj[i];
     }
-}
-bool GrafoMatriz::eh_completo() const {
-    for (int i = 0; i < numVertices; ++i) {
-        for (int j = 0; j < numVertices; ++j) {
-            // Ignora a diagonal, pois um vértice não está conectado a si mesmo
-            if (i != j && matrizAdj[i][j] == 0) {
-                return false; // Se alguma aresta estiver faltando, o grafo não é completo
-            }
-        }
-    }
-    return true; // O grafo é completo
+    delete[] matrizAdj;
 }
 
-
-bool GrafoMatriz::eh_arvore() const {
-    return (n_conexo() == 1) && (numArestas == numVertices - 1);
-}
-
-void GrafoMatriz::carregar_grafo(const std::string& nomeArquivo) {
-    std::ifstream arquivo(nomeArquivo);
-
-    if (!arquivo.is_open()) {
-        std::cerr << "Erro ao abrir o arquivo: " << nomeArquivo << std::endl;
+void GrafoMatriz::carregar_grafo(const string& nomeArquivo) {
+    ifstream arquivo(nomeArquivo);
+    if (!arquivo) {
+        cerr << "Erro ao abrir o arquivo!" << endl;
         return;
     }
 
-    // Lê o número de vértices
-    int numVerticesArquivo;
-    arquivo >> numVerticesArquivo;
-
-    if (numVerticesArquivo != numVertices) {
-        std::cerr << "Número de vértices no arquivo não corresponde ao grafo." << std::endl;
-        return;
-    }
-
-    // Lê a matriz de adjacência
-    for (int i = 0; i < numVertices; ++i) {
-        for (int j = 0; j < numVertices; ++j) {
-            arquivo >> matrizAdj[i][j];
-            if (matrizAdj[i][j] != 0) {
-                // Para grafos não direcionados, preenche também a posição inversa
-                matrizAdj[j][i] = matrizAdj[i][j];
-            }
-        }
-    }
-
-    arquivo.close();
-}
-
-void GrafoMatriz::imprimir_grafo(const std::string& nomeArquivo) const {
-    std::ofstream arquivo(nomeArquivo);
-    if (!arquivo.is_open()) {
-        std::cerr << "Erro ao abrir o arquivo para escrita." << std::endl;
-        return;
-    }
-
-    arquivo << "Matriz de Adjacência:\n"; // Adiciona um título para a matriz
-    for (const auto& linha : matrizAdj) {
-        for (int peso : linha) {
-            arquivo << peso << " ";
-        }
-        arquivo << "\n";
-    }
-    arquivo.close();
-    std::cout << "Grafo salvo em " << nomeArquivo << std::endl;
-}
-
-int GrafoMatriz::get_ordem() const {
-    return numVertices;
-}
-
-bool GrafoMatriz::eh_direcionado() const {
-    return direcionado;
-}
-
-bool GrafoMatriz::vertice_ponderado() const {
-    return verticePonderado;
-}
-
-bool GrafoMatriz::aresta_ponderada() const {
-    return arestaPonderada;
-}
-
-void GrafoMatriz::novo_grafo(const std::string& nomeArquivo) {
-    std::ifstream arquivo(nomeArquivo);
-    if (!arquivo.is_open()) {
-        std::cerr << "Erro ao abrir o arquivo de configuração." << std::endl;
-        return;
-    }
-
-    // Lê as informações do arquivo de configuração
-    int numVertices, numArestas;
-    arquivo >> numVertices >> numArestas;
-
-    // Inicializa a matriz de adjacência com 0 (sem arestas)
-    matrizAdj.resize(numVertices, std::vector<int>(numVertices, 0));
-
-    // Gerador de números aleatórios
-    std::default_random_engine generator;
-    std::uniform_int_distribution<int> distribution(0, numVertices - 1); // Para os vértices
-    std::uniform_int_distribution<int> weightDistribution(1, 10);  // Para os pesos (caso o grafo seja ponderado)
-
-    // Gera as arestas aleatórias
-    for (int i = 0; i < numArestas; ++i) {
-        int origem = distribution(generator);
-        int destino = distribution(generator);
-
-        // Garante que não haverá laços (vértice se conectando consigo mesmo)
-        while (origem == destino) {
-            destino = distribution(generator);
-        }
-
-        // Gera um peso aleatório
-        int peso = weightDistribution(generator);
-
-        // Adiciona a aresta na matriz de adjacência
+    int origem, destino, peso;
+    while (arquivo >> origem >> destino >> peso) {
         matrizAdj[origem][destino] = peso;
-        matrizAdj[destino][origem] = peso;  // Como o grafo é não direcionado
-
-        // Depuração: Verifica as arestas geradas
-        std::cout << "Aresta gerada: " << origem << " <-> " << destino << " (peso " << peso << ")" << std::endl;
+        if (!eh_direcionado()) {
+            matrizAdj[destino][origem] = peso;
+        }
     }
 
-    std::cout << "Grafo aleatório gerado com " << numVertices << " vértices e " << numArestas << " arestas." << std::endl;
+    arquivo.close();
+}
+
+void GrafoMatriz::imprimir_grafo(const string& nomeArquivo) const {
+    ofstream arquivo(nomeArquivo);
+    if (!arquivo) {
+        cerr << "Erro ao criar arquivo de saída!" << endl;
+        return;
+    }
+
+    for (int i = 0; i < get_ordem(); i++) {
+        for (int j = 0; j < get_ordem(); j++) {
+            arquivo << matrizAdj[i][j] << " ";
+        }
+        arquivo << endl;
+    }
+}
+
+int* GrafoMatriz::get_vizinhos(int vertice, int& tamanho) const {
+    tamanho = 0;
+    for (int i = 0; i < get_ordem(); i++) {
+        if (matrizAdj[vertice][i] > 0) tamanho++;
+    }
+
+    int* vizinhos = new int[tamanho];
+    int index = 0;
+    for (int i = 0; i < get_ordem(); i++) {
+        if (matrizAdj[vertice][i] > 0) {
+            vizinhos[index++] = i;
+        }
+    }
+    return vizinhos;
+}
+
+bool GrafoMatriz::existe_aresta(int origem, int destino) const {
+    return matrizAdj[origem][destino] != 0;
+}
+
+void GrafoMatriz::remover_vertice(int vertice) {
+    for (int i = 0; i < get_ordem(); i++) {
+        matrizAdj[i][vertice] = 0;
+        matrizAdj[vertice][i] = 0;
+    }
+}
+
+void GrafoMatriz::remover_aresta(int origem, int destino) {
+    matrizAdj[origem][destino] = 0;
+    if (!eh_direcionado()) {
+        matrizAdj[destino][origem] = 0;
+    }
+}
+
+bool GrafoMatriz::eh_vizinho(int u, int vizinho) const {
+    return matrizAdj[u][vizinho] > 0;
+}
+
+void GrafoMatriz::dfs(int vertice, int* visitados) const {
+    visitados[vertice] = 1;
+
+    int tamanho;
+    int* vizinhos = get_vizinhos(vertice, tamanho);
+    for (int i = 0; i < tamanho; i++) {
+        if (visitados[vizinhos[i]] == 0) {
+            dfs(vizinhos[i], visitados);
+        }
+    }
+    delete[] vizinhos;
+}
+
+Grafo* GrafoMatriz::copia() const {
+    GrafoMatriz* novoGrafo = new GrafoMatriz(numVertices, direcionado, verticePonderado, arestaPonderada);
+
+    for (int i = 0; i < numVertices; i++) {
+        for (int j = 0; j < numVertices; j++) {
+            if (matrizAdj[i][j] != 0) {
+                novoGrafo->matrizAdj[i][j] = matrizAdj[i][j];
+            }
+        }
+    }
+
+    return novoGrafo;
 }

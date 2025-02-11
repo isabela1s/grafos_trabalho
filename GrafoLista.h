@@ -2,33 +2,17 @@
 #define GRAFOLISTA_H
 
 #include "Grafo.h"
-#include <unordered_map>
-#include <vector>
-#include <string>
-#include <stack>
 #include <iostream>
-#include <queue>
 
 class GrafoLista : public Grafo {
 public:
     GrafoLista(int numVertices, bool direcionado, bool verticePonderado, bool arestaPonderada);
     ~GrafoLista();
 
-    bool eh_bipartido() const override;
-    int n_conexo() const override;
-    int get_grau(int vertice) const override;
-    bool possui_articulacao() const override;
-    bool possui_ponte() const override;
-    bool eh_completo() const override;
-    bool eh_arvore() const override;
+    void imprimir_grafo(const std::string& nomeArquivo) const;
 
-    void novo_grafo(const std::string& nomeArquivo);
-
-    void carregar_grafo(const std::string& nomeArquivo) override;
-    void imprimir_grafo(const std::string& nomeArquivo) const override;
-
-    void adicionar_aresta(int origem, int destino, int peso = 1); // Adiciona aresta com peso
-    void adicionar_vertice(int id); // Adiciona um novo vértice ao grafo
+    void adicionar_vertice(int id);
+    void adicionar_aresta(int origem, int destino, int peso = 1);
 
 private:
     struct Aresta {
@@ -41,27 +25,31 @@ private:
     struct Vertice {
         int id;
         Aresta* arestas;
-        Vertice(int id) : id(id), arestas(nullptr) {}
-
-        void adicionar_aresta(int destino, int peso) {
-            Aresta* nova = new Aresta(destino, peso);
-            nova->prox = arestas;
-            arestas = nova;
+        Vertice(int i) : id(i), arestas(nullptr) {}
+        void adicionar_aresta(int dest, int pes) {
+            Aresta* nova_aresta = new Aresta(dest, pes);
+            nova_aresta->prox = arestas;
+            arestas = nova_aresta;
         }
     };
 
-    std::unordered_map<int, Vertice*> listaAdj;
+    struct NoVertice {
+        Vertice* vertice;
+        NoVertice* prox;
+        NoVertice(Vertice* v) : vertice(v), prox(nullptr) {}
+    };
 
-    void dfs(int id, std::unordered_map<int, bool>& visitados) const;
-    void dfs_pontes(int id, int parent, std::unordered_map<int, int>& discovery,
-                    std::unordered_map<int, int>& low, int& time, bool& temPonte);
-    Vertice* get_vertice(int id) const;
-    void dfs_articulacao(int id, int parent, std::unordered_map<int, int>& discovery,
-                          std::unordered_map<int, int>& low, std::unordered_map<int, bool>& visitados,
-                          int& time, bool& temArticulacao) const;
-    void dfs_ponte(int id, int parent, std::unordered_map<int, int>& discovery,
-                   std::unordered_map<int, int>& low, std::unordered_map<int, bool>& visitados,
-                   int& time, bool& temPonte) const;
+    NoVertice* listaAdj;
+
+    int* get_vizinhos(int vertice, int& tamanho) const override;
+    bool existe_aresta(int origem, int destino) const override;
+    Grafo* copia() const override;
+    void remover_vertice(int vertice) override;
+    void remover_aresta(int origem, int destino) override;
+    bool eh_vizinho(int u, int vizinho) const override;
+    void dfs(int vertice, int* visitados) const override;
 };
+
+
 
 #endif // GRAFOLISTA_H
