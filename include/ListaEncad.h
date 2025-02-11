@@ -12,6 +12,7 @@ class ListaEncad {
         void removeNo(int val);
         bool busca(int val);
         void imprimeLista();
+        void get_adj(int adjacentes[], int &size) const;
 
     private:
         No* primeiro;

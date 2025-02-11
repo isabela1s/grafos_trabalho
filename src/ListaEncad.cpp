@@ -83,3 +83,12 @@ void ListaEncad::imprimeLista() {
     }
     cout << "NULL" << endl;
 }
+
+void ListaEncad::get_adj(int adjacentes[], int &size) const {
+    No* p = primeiro;
+    size = 0;
+    while (p != nullptr) {
+        adjacentes[size++] = p->getInfo();
+        p = p->getProx();
+    }
+}
