@@ -2,17 +2,15 @@
 #define GRAFOMATRIZ_H
 
 #include "Grafo.h"
-#include <vector>
 #include <string>
-#include <iostream>
-
-using namespace std;
+#include <vector>
 
 class GrafoMatriz : public Grafo {
 public:
     GrafoMatriz(int numVertices, bool direcionado, bool verticePonderado, bool arestaPonderada);
     ~GrafoMatriz();
 
+    // Funções principais
     bool eh_bipartido() const override;
     int n_conexo() const override;
     int get_grau(int vertice) const override;
@@ -20,24 +18,31 @@ public:
     bool possui_ponte() const override;
     bool eh_completo() const override;
     bool eh_arvore() const override;
-    void novo_grafo(const string& nomeArquivo);
+    int menor_distancia(int origem, int destino);
+    pair<pair<int, int>, int> maior_menor_distancia();
 
-    void carregar_grafo(const string& nomeArquivo) override;
-    void imprimir_grafo(const string& nomeArquivo) const override;
+    // Funções de manipulação do grafo
+    void novo_no();
+    void nova_aresta(int origem, int destino, int peso);
+    void deleta_no(int no);
+    void deleta_aresta(int origem, int destino);
 
-    void adicionar_vertice(); // Adiciona um vértice na matriz (aumenta tamanho)
-    void adicionar_aresta(int origem, int destino, int peso = 1); // Adiciona aresta com peso
+    void carregar_grafo(const std::string& nomeArquivo) override;
+    void imprimir_grafo(const std::string& nomeArquivo) const override;
 
-    // Funções auxiliares
     int get_ordem() const;
     bool eh_direcionado() const;
     bool vertice_ponderado() const;
     bool aresta_ponderada() const;
 
 private:
+    //int** matrizAdj;  // Matriz de adjacência alocada dinamicamente
+    int capacidade;   // Capacidade da matriz (tamanho atual)
+
+    void redimensionar_matriz(); // Redimensiona a matriz quando necessário
     vector<vector<int>> matrizAdj; // Matriz de adjacência
     void dfs(int vertice, vector<bool>& visitados) const; // Versão original (para n_conexo)
-    void dfs(int vertice, vector<bool>& visitados, const vector<vector<int>>& matriz) const; // Para possui_articulacao
+    void dfs(int vertice, vector<bool>& visitados, const vector<vector<int>>& matriz) const;
 };
 
 #endif // GRAFOMATRIZ_H
