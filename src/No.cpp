@@ -1,6 +1,8 @@
 #include "../include/No.h"
 #include <iostream>
 
+using namespace std;
+
 No::No(int val, int p) {
     info = val;
     peso = p;
@@ -9,7 +11,15 @@ No::No(int val, int p) {
 
 No::~No() {}
 
-int No::getInfo() { return info; }
+int No::getInfo() { 
+    if(!this) {
+        cerr << "Erro: Tentativa de acessar um nó inválido em getInfo()" << endl;
+        return -1;
+    }
+
+    return info; 
+    
+}
 
 int No::getPeso() { return peso; }
 

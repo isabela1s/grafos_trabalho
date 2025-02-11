@@ -10,7 +10,8 @@ class GrafoLista : public Grafo {
 public:
     GrafoLista(int numVertices, bool direcionado, bool verticePonderado, bool arestaPonderada);
     ~GrafoLista();
-
+    
+    void carregar_grafo(const std::string& nomeArquivo);
     void imprimir_grafo(const std::string& nomeArquivo) const;
 
     void adicionar_vertice(int id);

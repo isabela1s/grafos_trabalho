@@ -5,12 +5,59 @@
 using namespace std;
 
 GrafoLista::GrafoLista(int numVertices, bool direcionado, bool verticePonderado, bool arestaPonderada)
-    : Grafo(numVertices, direcionado, verticePonderado, arestaPonderada), listaAdj(nullptr) {
+    : Grafo(numVertices, direcionado, verticePonderado, arestaPonderada) {
+        this->numVertices = numVertices;
+        listaAdj = new ListaEncad[numVertices];
+        pesosVertices = new int[numVertices];
 }
 
 GrafoLista::~GrafoLista() {
     delete[] listaAdj;
     delete[] pesosVertices;
+}
+
+void GrafoLista::carregar_grafo(const std::string& nomeArquivo) {
+    ifstream arquivo(nomeArquivo);
+
+    if(!arquivo) {
+        cerr << "Erro ao abrir o arquivo " << nomeArquivo << endl;
+        return;
+    }
+
+    arquivo >> numVertices >> direcionado >> verticePonderado >> arestaPonderada;
+
+    arquivo >> numVertices >> direcionado >> verticePonderado >> arestaPonderada;
+    cout << "numVertices: " << numVertices << ", direcionado: " << direcionado
+         << ", verticePonderado: " << verticePonderado << ", arestaPonderada: " << arestaPonderada << endl;
+
+    // Liberar a memória alocada anteriormente, se houver
+    delete[] listaAdj;
+    delete[] pesosVertices;
+
+    // Inicializar nova lista de adjacência e pesos de vértices, se necessário
+    listaAdj = new ListaEncad[numVertices];
+
+    if(verticePonderado) {
+        pesosVertices = new int[numVertices];
+        for(int i = 0; i < numVertices; i++) {
+            arquivo >> pesosVertices[i];
+        }
+    } else {
+        pesosVertices = nullptr;
+    }
+
+    int origem, destino, peso = 0;
+    while (arquivo >> origem >> destino) {
+        if (arestaPonderada) {
+            arquivo >> peso;
+        } else {
+            peso = 1; // Peso padrão para arestas não ponderadas
+        }
+        adicionar_aresta(origem - 1, destino - 1, peso);
+    }
+
+    arquivo.close();
+    cout << "Grafo carregado de " << nomeArquivo << std::endl;
 }
 
 void GrafoLista::adicionar_vertice(int id) {
@@ -89,11 +136,16 @@ void GrafoLista::remover_vertice(int vertice) {
         return;
     }
 
-    listaAdj[vertice].~ListaEncad(); // Liberar a lista encadeada do vértice
-
     for (int i = 0; i < numVertices; i++) {
         listaAdj[i].removeNo(vertice + 1);
     }
+
+    for (int i = vertice; i < numVertices - 1; i++) {
+        listaAdj[i] = listaAdj[i + 1]; 
+    }
+
+    numVertices--;
+
 }
 
 void GrafoLista::remover_aresta(int origem, int destino) {
