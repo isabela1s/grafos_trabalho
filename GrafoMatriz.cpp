@@ -29,8 +29,45 @@ void GrafoMatriz::carregar_grafo(const string& nomeArquivo) {
         return;
     }
 
+    int numVerticesArquivo;
+    arquivo >> numVerticesArquivo;
+
+    // Verifica se precisamos redimensionar a matriz de adjacência
+    if (numVerticesArquivo != numVertices) {
+        // Liberar matriz antiga
+        for (int i = 0; i < numVertices; i++) {
+            delete[] matrizAdj[i];
+        }
+        delete[] matrizAdj;
+
+        // Criar nova matriz com tamanho correto
+        numVertices = numVerticesArquivo;
+        matrizAdj = new int*[numVertices];
+        for (int i = 0; i < numVertices; i++) {
+            matrizAdj[i] = new int[numVertices];
+            for (int j = 0; j < numVertices; j++) {
+                matrizAdj[i][j] = 0; // Inicializa sem arestas
+            }
+        }
+    }
+
     int origem, destino, peso;
-    while (arquivo >> origem >> destino >> peso) {
+    bool temPeso = arestaPonderada;
+
+    while (arquivo >> origem >> destino) {
+        // Se o grafo for ponderado, lê o peso. Caso contrário, assume peso 1.
+        if (temPeso) {
+            arquivo >> peso;
+        } else {
+            peso = 1;
+        }
+
+        // Verifica se os índices estão dentro dos limites válidos
+        if (origem < 0 || origem >= numVertices || destino < 0 || destino >= numVertices) {
+            cerr << "Erro: Índices de vértices fora do intervalo válido! (" << origem << ", " << destino << ")" << endl;
+            continue;
+        }
+
         matrizAdj[origem][destino] = peso;
         if (!eh_direcionado()) {
             matrizAdj[destino][origem] = peso;
