@@ -1,2 +1,3 @@
-Vértice 1: 
-Vértice 2: 
+Vértice 1: 2 (peso 6)
+Vértice 2: 3 (peso -5) -> 1 (peso 4)
+Vértice 3: NULL

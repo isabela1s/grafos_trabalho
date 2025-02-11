@@ -26,10 +26,6 @@ void GrafoLista::carregar_grafo(const std::string& nomeArquivo) {
 
     arquivo >> numVertices >> direcionado >> verticePonderado >> arestaPonderada;
 
-    arquivo >> numVertices >> direcionado >> verticePonderado >> arestaPonderada;
-    cout << "numVertices: " << numVertices << ", direcionado: " << direcionado
-         << ", verticePonderado: " << verticePonderado << ", arestaPonderada: " << arestaPonderada << endl;
-
     // Liberar a memória alocada anteriormente, se houver
     delete[] listaAdj;
     delete[] pesosVertices;
@@ -41,6 +37,7 @@ void GrafoLista::carregar_grafo(const std::string& nomeArquivo) {
         pesosVertices = new int[numVertices];
         for(int i = 0; i < numVertices; i++) {
             arquivo >> pesosVertices[i];
+            //cout << "Peso do vértice " << i + 1 << ": " << pesosVertices[i] << endl;
         }
     } else {
         pesosVertices = nullptr;
@@ -50,8 +47,11 @@ void GrafoLista::carregar_grafo(const std::string& nomeArquivo) {
     while (arquivo >> origem >> destino) {
         if (arestaPonderada) {
             arquivo >> peso;
+            //cout << "Lendo aresta: origem=" << origem << ", destino=" << destino << ", peso=" << peso << endl;
         } else {
             peso = 1; // Peso padrão para arestas não ponderadas
+
+            //cout << "Lendo aresta: origem=" << origem << ", destino=" << destino << ", peso=" << peso << endl;
         }
         adicionar_aresta(origem - 1, destino - 1, peso);
     }
@@ -76,9 +76,23 @@ void GrafoLista::imprimir_grafo(const string& nomeArquivo) const {
 
     for (int i = 0; i < numVertices; i++) {
         arquivo << "Vértice " << i + 1 << ": ";
-        cout << "Processando vértice " << i + 1 << endl;
+        //cout << "Processando vértice " << i + 1 << endl;
 
-        listaAdj[i].imprimeLista();
+        ListaEncad* lista = &listaAdj[i];
+        No* atual = lista->primeiro;
+        if (!atual) {
+            arquivo << "NULL";
+        }
+        while (atual) {
+            arquivo << atual->getInfo();
+            if (atual->getPeso() != -1) {
+                arquivo << " (peso " << atual->getPeso() << ")";
+            }
+            if (atual->getProx()) {
+                arquivo << " -> ";
+            }
+            atual = atual->getProx();
+        }
 
         arquivo << endl;
     }

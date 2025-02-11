@@ -17,18 +17,9 @@ ListaEncad::~ListaEncad() {
 }
 
 void ListaEncad::insere(int val, int peso) {
-    No *novo = new No(val, peso);
-
-    if (primeiro == nullptr) {
-        primeiro = novo;
-    } else {
-        No *p = primeiro;
-        while (p->getProx() != nullptr) {
-            p = p->getProx();
-        }
-        p->setProx(novo);
-    }
-
+    No* novo = new No(val, peso);
+    novo->setProx(primeiro);
+    primeiro = novo;
 }
 
 void ListaEncad::removeNo(int val) {

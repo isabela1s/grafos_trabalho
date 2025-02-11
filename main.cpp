@@ -46,29 +46,19 @@ int main(int argc, char* argv[]) {
 
         } else if(estrutura == "-l") {
             GrafoLista grafo(4, false, false, false);
+
             grafo.carregar_grafo(arquivo_grafo);  
+            
             grafo.imprimir_grafo("grafo_lista_saida.txt");
 
-            // // Adicionando vértices e arestas
-            // grafo.adicionar_vertice(0);
-            // grafo.adicionar_vertice(1);
-            // grafo.adicionar_vertice(2);
-            // grafo.adicionar_vertice(3);
-
-            // // Adicionando arestas
-            // grafo.adicionar_aresta(0, 1); // Aresta entre 0 e 1
-            // grafo.adicionar_aresta(1, 2); // Aresta entre 1 e 2
-            // grafo.adicionar_aresta(2, 3); // Aresta entre 2 e 3
-            // grafo.adicionar_aresta(3, 0); // Aresta entre 3 e 0
-
             // Testando funções
-            // cout << "Número de componentes conexos: " << grafo.n_conexo() << std::endl;
-            // cout << "Grau do vértice 0: " << grafo.get_grau(0) << std::endl;
-            // cout << "O grafo é bipartido? " << (grafo.eh_bipartido() ? "Sim" : "Não") << std::endl;
-            // cout << "O grafo é completo? " << (grafo.eh_completo() ? "Sim" : "Não") << std::endl;
-            // cout << "O grafo é uma árvore? " << (grafo.eh_arvore() ? "Sim" : "Não") << std::endl;
-            // cout << "O grafo possui articulação? " << (grafo.possui_articulacao() ? "Sim" : "Não") << std::endl;
-            // cout << "O grafo possui ponte? " << (grafo.possui_ponte() ? "Sim" : "Não") << std::endl;
+            cout << "Número de componentes conexos: " << grafo.n_conexo() << std::endl;
+            cout << "Grau do vértice 0: " << grafo.get_grau(0) << std::endl;
+            cout << "O grafo é bipartido? " << (grafo.eh_bipartido() ? "Sim" : "Não") << std::endl;
+            cout << "O grafo é completo? " << (grafo.eh_completo() ? "Sim" : "Não") << std::endl;
+            cout << "O grafo é uma árvore? " << (grafo.eh_arvore() ? "Sim" : "Não") << std::endl;
+            cout << "O grafo possui articulação? " << (grafo.possui_articulacao() ? "Sim" : "Não") << std::endl;
+            cout << "O grafo possui ponte? " << (grafo.possui_ponte() ? "Sim" : "Não") << std::endl;
         } else {
             imprimir_instrucao();
             return 1;
