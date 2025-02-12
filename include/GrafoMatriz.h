@@ -3,6 +3,7 @@
 
 #include "Grafo.h"
 #include <iostream>
+#include <vector>
 
 class GrafoMatriz : public Grafo {
 public:
@@ -12,8 +13,20 @@ public:
     void carregar_grafo(const std::string& nomeArquivo);
     void imprimir_grafo(const std::string& nomeArquivo) const;
 
+    void novo_no();
+    void nova_aresta(int origem, int destino, int peso);
+    void deleta_no(int no);
+    void deleta_aresta(int origem, int destino);
+
 private:
-    int** matrizAdj;
+    //int** matrizAdj;
+
+    int capacidade; 
+    void redimensionar_matriz(); // Redimensiona a matriz quando necessário
+    vector<vector<int>> matrizAdj; // Matriz de adjacência
+    //void dfs(int vertice, vector<bool>& visitados) const; // Versão original (para n_conexo)
+    //void dfs(int vertice, vector<bool>& visitados, const vector<vector<int>>& matriz) const;
+
     int* get_vizinhos(int vertice, int& tamanho) const override;
     bool existe_aresta(int origem, int destino) const override;
     Grafo* copia() const override;

@@ -1,4 +1,4 @@
-#include "GrafoMatriz.h"
+#include "../include/GrafoMatriz.h"
 #include <iostream>
 #include <fstream>
 
@@ -13,6 +13,7 @@ GrafoMatriz::GrafoMatriz(int numVertices, bool direcionado, bool verticePonderad
             matrizAdj[i][j] = 0; // Inicializa sem arestas
         }
     }
+    matrizAdj.resize(numVertices, std::vector<int>(numVertices, 0));
 }
 
 GrafoMatriz::~GrafoMatriz() {
@@ -20,6 +21,64 @@ GrafoMatriz::~GrafoMatriz() {
         delete[] matrizAdj[i];
     }
     delete[] matrizAdj;
+}
+
+void GrafoMatriz::redimensionar_matriz() {
+    int novaCapacidade = capacidade * 2;
+
+    // Redimensiona o número de linhas
+    matrizAdj.resize(novaCapacidade);
+    for (int i = 0; i < novaCapacidade; i++) {
+        // Redimensiona as colunas em cada linha
+        matrizAdj[i].resize(novaCapacidade, 0);
+    }
+
+    capacidade = novaCapacidade;
+}
+
+void GrafoMatriz::novo_no() {
+    if (numVertices == capacidade) {
+        redimensionar_matriz();
+    }
+
+    // Inicializa a nova linha e coluna
+    for (int i = 0; i <= numVertices; ++i) {
+        matrizAdj[i][numVertices] = 0;
+        matrizAdj[numVertices][i] = 0;
+    }
+
+    numVertices++;
+}
+
+void GrafoMatriz::nova_aresta(int origem, int destino, int peso) {
+    if (origem < numVertices && destino < numVertices) {
+        matrizAdj[origem][destino] = peso;
+        if (!direcionado) {
+            matrizAdj[destino][origem] = peso;
+        }
+    } else {
+        cout << "Erro: índice fora dos limites!\n";
+    }
+}
+
+void GrafoMatriz::deleta_no(int no) {
+    for (int i = no; i < numVertices - 1; i++) {
+        for (int j = 0; j < numVertices; j++) {
+            matrizAdj[i][j] = matrizAdj[i + 1][j];  // Desloca linhas
+            matrizAdj[j][i] = matrizAdj[j][i + 1];  // Desloca colunas
+        }
+    }
+    numVertices--;
+}
+
+// Remove uma aresta
+void GrafoMatriz::deleta_aresta(int origem, int destino) {
+    if (origem < numVertices && destino < numVertices) {
+        matrizAdj[origem][destino] = 0;
+        if (!direcionado) {
+            matrizAdj[destino][origem] = 0;
+        }
+    }
 }
 
 void GrafoMatriz::carregar_grafo(const string& nomeArquivo) {
