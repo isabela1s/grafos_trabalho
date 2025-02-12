@@ -54,7 +54,14 @@ int main(int argc, char* argv[]) {
         } else if(estrutura == "-l") {
             GrafoLista grafo(4, false, false, false);
 
-            grafo.carregar_grafo(arquivo_grafo);  
+            grafo.novo_no();
+            grafo.nova_aresta(3, 2, 8);
+            grafo.deleta_no(2);
+            grafo.deleta_aresta(1, 3);
+
+            auto resultado = grafo.calcular_diametro();
+
+            //grafo.carregar_grafo(arquivo_grafo);  
             
             grafo.imprimir_grafo("grafo_lista_saida.txt");
 
