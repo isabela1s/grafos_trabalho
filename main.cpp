@@ -1,6 +1,7 @@
-#include "GrafoLista.h"
-#include "GrafoMatriz.h"
+#include "../include/GrafoLista.h"
+#include "../include/GrafoMatriz.h"
 #include <iostream>
+
 using namespace std;
 
 void imprimir_instrucao() {
@@ -29,9 +30,17 @@ int main(int argc, char* argv[]) {
         string arquivo_grafo = argv[3];
 
         if(estrutura == "-m") {
-            GrafoMatriz grafo(4, false, false, false); 
-            grafo.carregar_grafo(arquivo_grafo);         
-            grafo.imprimir_grafo("grafo_matriz_saida.txt");
+            GrafoMatriz grafo(4, false, false, false); // Inicializa o grafo com 4 vértices
+            grafo.carregar_grafo("grafo_teste.txt");         // Carrega o grafo a partir do arquivo
+            //grafo.carregar_grafo(arquivo_grafo);
+            grafo.novo_no();
+            grafo.nova_aresta(4, 2, 3);
+            grafo.deleta_no(2);
+            grafo.deleta_aresta(1, 3);
+            auto resultado = grafo.maior_menor_distancia();
+            cout << "Maior menor distância: (" << resultado.first.first << "-" << resultado.first.second << ") " << resultado.second << endl;
+            grafo.imprimir_grafo("grafo_matriz_teste.txt");
+
 
             //Testando algumas funções:
             cout << "Grau do vértice 0: " << grafo.get_grau(0) << endl;

@@ -4,7 +4,7 @@
 #include <iostream>
 
 #include "Grafo.h"
-#include "include/ListaEncad.h"
+#include "ListaEncad.h"
 
 class GrafoLista : public Grafo {
 public:
