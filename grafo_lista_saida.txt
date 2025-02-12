@@ -1,7 +1,0 @@
-Grau: 3
-Ordem: 3
-Direcionado: Sim
-Vertices ponderados: Sim
-Arestas ponderadas: Sim
-Completo: Não
-Maior menor distância: 2
