@@ -10,11 +10,11 @@ public:
     Grafo(int numVertices, bool direcionado, bool verticePonderado, bool arestaPonderada);
     virtual ~Grafo();
 
-    virtual bool eh_bipartido() const = 0;
-    virtual int n_conexo() const = 0;
-    virtual int get_grau(int vertice) const = 0;
-    virtual bool possui_ponte() const = 0;
-    void novo_grafo(const string& nomeArquivo);
+    // virtual bool eh_bipartido() const = 0;
+    // virtual int n_conexo() const = 0;
+    // virtual int get_grau(int vertice) const = 0;
+    // virtual bool possui_ponte() const = 0;
+    // void novo_grafo(const string& nomeArquivo);
 
     virtual void carregar_grafo(const string& nomeArquivo) = 0;
     virtual void imprimir_grafo(const string& nomeArquivo) const = 0;
