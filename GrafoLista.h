@@ -17,6 +17,13 @@ public:
     void adicionar_vertice(int id);
     void adicionar_aresta(int origem, int destino, int peso = 1);
 
+    void novo_no(int id, int peso);
+    void nova_aresta(int origem, int destino, int peso);
+    void deleta_no(int id);
+    void deleta_aresta(int origem, int destino);
+
+    double calcular_diametro() const;
+
 private:
     ListaEncad* listaAdj;
 

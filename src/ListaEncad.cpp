@@ -74,3 +74,50 @@ void ListaEncad::imprimeLista() {
     }
     cout << "NULL" << endl;
 }
+
+No* ListaEncad::novo_no(int val, int peso) {
+    No* novo = new No(val, peso);
+    insere(val, peso); // Adiciona o novo nó à lista
+    return novo;
+}
+
+void ListaEncad::nova_aresta(No* origem, int destino, int peso) {
+    if (origem) {
+        No* novo = new No(destino, peso);
+        novo->setProx(origem->getProx());
+        origem->setProx(novo);
+    }
+}
+
+void ListaEncad::deleta_no(int val) {
+    removeNo(val);
+}
+
+void ListaEncad::deleta_aresta(int origem, int destino) {
+    No* noOrigem = encontrarNo(origem);
+    if (!noOrigem) return;
+
+    No* atual = noOrigem->getProx();
+    No* anterior = noOrigem;
+
+    while (atual && atual->getInfo() != destino) {
+        anterior = atual;
+        atual = atual->getProx();
+    }
+
+    if (!atual) return;
+
+    anterior->setProx(atual->getProx());
+    delete atual;
+}
+
+No* ListaEncad::encontrarNo(int val) {
+    No* atual = primeiro;
+    while (atual) {
+        if (atual->getInfo() == val) {
+            return atual;
+        }
+        atual = atual->getProx();
+    }
+    return nullptr;
+}

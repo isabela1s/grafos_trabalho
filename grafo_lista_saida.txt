@@ -1,3 +1,7 @@
-Vértice 1: 2 (peso 6)
-Vértice 2: 3 (peso -5) -> 1 (peso 4)
-Vértice 3: NULL
+Grau: 3
+Ordem: 3
+Direcionado: Sim
+Vertices ponderados: Sim
+Arestas ponderadas: Sim
+Completo: Não
+Maior menor distância: 2

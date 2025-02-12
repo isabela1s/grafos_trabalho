@@ -26,11 +26,11 @@ void GrafoLista::carregar_grafo(const std::string& nomeArquivo) {
 
     arquivo >> numVertices >> direcionado >> verticePonderado >> arestaPonderada;
 
-    // Liberar a memória alocada anteriormente, se houver
+    // Liberar a memória alocada anteriormente
     delete[] listaAdj;
     delete[] pesosVertices;
 
-    // Inicializar nova lista de adjacência e pesos de vértices, se necessário
+    // Inicializar nova lista de adjacência e pesos de vértices
     listaAdj = new ListaEncad[numVertices];
 
     if(verticePonderado) {
@@ -67,41 +67,121 @@ void GrafoLista::adicionar_vertice(int id) {
     }
 }
 
-void GrafoLista::imprimir_grafo(const string& nomeArquivo) const {
+// void GrafoLista::imprimir_grafo(const string& nomeArquivo) const {
+//     ofstream arquivo(nomeArquivo);
+//     if (!arquivo.is_open()) {
+//         cerr << "Erro ao abrir o arquivo para escrita." << endl;
+//         return;
+//     }
+
+//     for (int i = 0; i < numVertices; i++) {
+//         arquivo << "Vértice " << i + 1 << ": ";
+//         //cout << "Processando vértice " << i + 1 << endl;
+
+//         ListaEncad* lista = &listaAdj[i];
+//         No* atual = lista->primeiro;
+//         if (!atual) {
+//             arquivo << "NULL";
+//         }
+//         while (atual) {
+//             arquivo << atual->getInfo();
+//             if (atual->getPeso() != -1) {
+//                 arquivo << " (peso " << atual->getPeso() << ")";
+//             }
+//             if (atual->getProx()) {
+//                 arquivo << " -> ";
+//             }
+//             atual = atual->getProx();
+//         }
+
+//         arquivo << endl;
+//     }
+
+//     arquivo.close();
+//     cout << "Grafo salvo em " << nomeArquivo << endl;
+
+
+// }
+
+void GrafoLista::imprimir_grafo(const std::string& nomeArquivo) const {
     ofstream arquivo(nomeArquivo);
     if (!arquivo.is_open()) {
-        cerr << "Erro ao abrir o arquivo para escrita." << endl;
+        cerr << "Erro ao abrir o arquivo para escrita. " << endl;
         return;
     }
 
+    int grau = numArestas;
+    arquivo << "Grau: " << grau << endl;
+
+    int ordem = numVertices;
+    arquivo << "Ordem: " << ordem << endl;
+
+    arquivo << "Direcionado: " << (direcionado ? "Sim" : "Não") << endl;
+
+    arquivo << "Vertices ponderados: " << (verticePonderado ? "Sim" : "Não") << endl;
+
+    arquivo << "Arestas ponderadas: " << (arestaPonderada ? "Sim" : "Não") << endl;
+
+    bool completo = true;
     for (int i = 0; i < numVertices; i++) {
-        arquivo << "Vértice " << i + 1 << ": ";
-        //cout << "Processando vértice " << i + 1 << endl;
-
-        ListaEncad* lista = &listaAdj[i];
-        No* atual = lista->primeiro;
-        if (!atual) {
-            arquivo << "NULL";
-        }
-        while (atual) {
-            arquivo << atual->getInfo();
-            if (atual->getPeso() != -1) {
-                arquivo << " (peso " << atual->getPeso() << ")";
+        for (int j = 0; j < numVertices; j++) {
+            if (i != j && !existe_aresta(i, j)) {
+                completo = false;
+                break;
             }
-            if (atual->getProx()) {
-                arquivo << " -> ";
-            }
-            atual = atual->getProx();
         }
-
-        arquivo << endl;
+        if (!completo) break;
     }
+    arquivo << "Completo: " << (completo ? "Sim" : "Não") << endl;
+
+    // Maior menor distância (Diâmetro do grafo)
+    double maior_menor_distancia = calcular_diametro();
+    arquivo << "Maior menor distância: " << maior_menor_distancia << endl;
 
     arquivo.close();
-    cout << "Grafo salvo em " << nomeArquivo << endl;
-
-
+    std::cout << "Grafo salvo em " << nomeArquivo << endl;
 }
+
+double GrafoLista::calcular_diametro() const {
+    const int INF = 1000000;
+    int dist[numVertices][numVertices];
+
+    // Inicializa a matriz de distâncias
+    for (int i = 0; i < numVertices; i++) {
+        for (int j = 0; j < numVertices; j++) {
+            if (i == j) {
+                dist[i][j] = 0;
+            } else if (existe_aresta(i, j)) {
+                dist[i][j] = 1; 
+            } else {
+                dist[i][j] = INF;
+            }
+        }
+    }
+
+    for (int k = 0; k < numVertices; k++) {
+        for (int i = 0; i < numVertices; i++) {
+            for (int j = 0; j < numVertices; j++) {
+                if (dist[i][j] > dist[i][k] + dist[k][j]) {
+                    dist[i][j] = dist[i][k] + dist[k][j];
+                }
+            }
+        }
+    }
+
+    // Encontrar o maior valor na matriz de distâncias
+    double maxDist = 0;
+    for (int i = 0; i < numVertices; i++) {
+        for (int j = 0; j < numVertices; j++) {
+            if (dist[i][j] != INF && dist[i][j] > maxDist) {
+                maxDist = dist[i][j];
+            }
+        }
+    }
+
+    return maxDist;
+}
+
 
 int* GrafoLista::get_vizinhos(int vertice, int& tamanho) const {
     if (vertice >= numVertices) {
@@ -217,4 +297,37 @@ void GrafoLista::dfs(int vertice, int visitados[]) const {
     }
 
     delete[] vizinhos;
+}
+
+void GrafoLista::novo_no(int id, int peso) {
+    if (id >= numVertices) {
+        cout << "ID do vértice fora do limite." << endl;
+        return;
+    }
+    listaAdj[id].novo_no(id, peso);
+}
+
+void GrafoLista::nova_aresta(int origem, int destino, int peso) {
+    if (origem >= numVertices || destino >= numVertices) {
+        cout << "Vértice fora do limite." << endl;
+        return;
+    }
+    No* origemNo = listaAdj[origem].novo_no(origem, 0); 
+    listaAdj[origem].nova_aresta(origemNo, destino, peso);
+}
+
+void GrafoLista::deleta_no(int id) {
+    if (id >= numVertices) {
+        cout << "ID do vértice fora do limite." << endl;
+        return;
+    }
+    listaAdj[id].deleta_no(id);
+}
+
+void GrafoLista::deleta_aresta(int origem, int destino) {
+    if (origem >= numVertices || destino >= numVertices) {
+        cout << "Vértice fora do limite." << endl;
+        return;
+    }
+    listaAdj[origem].deleta_aresta(origem, destino);
 }

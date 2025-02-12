@@ -7,8 +7,6 @@ void imprimir_instrucao() {
     cout << "Uso do programa:" << endl;
     cout << "  main.out -d -m <arquivo_grafo>  # Descrever grafo com matriz" << endl;
     cout << "  main.out -d -l <arquivo_grafo>  # Descrever grafo com lista" << endl;
-    cout << "  main.out -c -m <arquivo_desc> <arquivo_saida>  # Criar grafo aleatório com matriz" << endl;
-    cout << "  main.out -c -l <arquivo_desc> <arquivo_saida>  # Criar grafo aleatório com lista" << endl;
 }
 
 int main(int argc, char* argv[]) {
@@ -31,9 +29,9 @@ int main(int argc, char* argv[]) {
         string arquivo_grafo = argv[3];
 
         if(estrutura == "-m") {
-            GrafoMatriz grafo(4, false, false, false); // Inicializa o grafo com 4 vértices
-            grafo.carregar_grafo(arquivo_grafo);         // Carrega o grafo a partir do arquivo
-            grafo.imprimir_grafo("grafo_matriz_saida.txt"); // Imprime o grafo para verificar
+            GrafoMatriz grafo(4, false, false, false); 
+            grafo.carregar_grafo(arquivo_grafo);         
+            grafo.imprimir_grafo("grafo_matriz_saida.txt");
 
             //Testando algumas funções:
             cout << "Grau do vértice 0: " << grafo.get_grau(0) << endl;
@@ -52,13 +50,13 @@ int main(int argc, char* argv[]) {
             grafo.imprimir_grafo("grafo_lista_saida.txt");
 
             // Testando funções
-            cout << "Número de componentes conexos: " << grafo.n_conexo() << std::endl;
-            cout << "Grau do vértice 0: " << grafo.get_grau(0) << std::endl;
-            cout << "O grafo é bipartido? " << (grafo.eh_bipartido() ? "Sim" : "Não") << std::endl;
-            cout << "O grafo é completo? " << (grafo.eh_completo() ? "Sim" : "Não") << std::endl;
-            cout << "O grafo é uma árvore? " << (grafo.eh_arvore() ? "Sim" : "Não") << std::endl;
-            cout << "O grafo possui articulação? " << (grafo.possui_articulacao() ? "Sim" : "Não") << std::endl;
-            cout << "O grafo possui ponte? " << (grafo.possui_ponte() ? "Sim" : "Não") << std::endl;
+            cout << "Número de componentes conexos: " << grafo.n_conexo() << endl;
+            cout << "Grau do vértice 0: " << grafo.get_grau(0) << endl;
+            cout << "O grafo é bipartido? " << (grafo.eh_bipartido() ? "Sim" : "Não") << endl;
+            cout << "O grafo é completo? " << (grafo.eh_completo() ? "Sim" : "Não") << endl;
+            cout << "O grafo é uma árvore? " << (grafo.eh_arvore() ? "Sim" : "Não") << endl;
+            cout << "O grafo possui articulação? " << (grafo.possui_articulacao() ? "Sim" : "Não") << endl;
+            cout << "O grafo possui ponte? " << (grafo.possui_ponte() ? "Sim" : "Não") << endl;
         } else {
             imprimir_instrucao();
             return 1;
